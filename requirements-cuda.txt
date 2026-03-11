@@ -1,0 +1,10 @@
+# PyTorch avec CUDA - A installer EN PRIORITE si une carte NVIDIA est disponible (Linux / Windows).
+# Si l'installation echoue (pas de driver CUDA, etc.), utiliser : pip install -r requirements-cpu.txt
+#
+# Index CUDA 12.1 par defaut. Pour CUDA 11.8 remplacer cu121 par cu118 ; pour 12.4 par cu124.
+# Voir https://pytorch.org/get-started/locally/
+
+--extra-index-url https://download.pytorch.org/whl/cu121
+torch
+torchvision
+torchaudio

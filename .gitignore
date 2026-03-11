@@ -205,3 +205,8 @@ cython_debug/
 marimo/_static/
 marimo/_lsp/
 __marimo__/
+
+# Données GO (fichiers OWL volumineux)
+data/*.owl
+data/*.ttl
+data/*.rdf

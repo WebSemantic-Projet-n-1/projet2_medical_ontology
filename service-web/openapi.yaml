@@ -1,0 +1,77 @@
+# OpenAPI 3.0 - Service d'analyse de l'évolution de Gene Ontology (GO)
+# Référence pour la documentation ; FastAPI génère aussi /docs et /openapi.json automatiquement.
+
+openapi: 3.0.3
+info:
+  title: GO Evolution API
+  description: API REST pour interroger les différences entre deux versions de Gene Ontology.
+  version: 0.1.0
+
+servers:
+  - url: http://localhost:8000
+    description: Développement local
+
+paths:
+  /api/term/{go_id}:
+    get:
+      summary: Informations d'un terme dans les deux versions
+      description: Retourne les métadonnées du terme (label, definition, deprecated, parent) pour chaque version.
+      parameters:
+        - name: go_id
+          in: path
+          required: true
+          schema:
+            type: string
+            example: "GO:0006281"
+      responses:
+        '200':
+          description: Objet avec champs version_old et version_new (ou équivalent).
+        '404':
+          description: Terme non trouvé.
+
+  /api/term/{go_id}/diff:
+    get:
+      summary: Différences entre les deux versions pour un terme
+      description: Retourne un JSON structuré (status, definition_diff, hierarchy_diff, relations, etc.).
+      parameters:
+        - name: go_id
+          in: path
+          required: true
+          schema:
+            type: string
+            example: "GO:0006281"
+      responses:
+        '200':
+          description: Objet diff (stable | modified | deprecated | new).
+        '404':
+          description: Terme non trouvé.
+
+  /api/domain/{domain_id}/stats:
+    get:
+      summary: Statistiques d'évolution pour un domaine
+      description: Nombre de classes, nouvelles, dépréciées, hiérarchie modifiée pour le domaine (ex. DNA repair).
+      parameters:
+        - name: domain_id
+          in: path
+          required: true
+          schema:
+            type: string
+            example: "0006281"
+      responses:
+        '200':
+          description: Objet stats (count_old, count_new, new_classes, deprecated, hierarchy_changed, etc.).
+        '404':
+          description: Domaine non trouvé.
+
+  /api/search:
+    get:
+      summary: Recherche de termes par label ou définition
+      parameters:
+        - name: q
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Liste de termes (go_id, label, definition, snippet).

@@ -1,0 +1,19 @@
+# Service web d'analyse GO (Partie 2)
+# A installer dans le meme venv que le projet : pip install -r service-web/requirements.txt
+
+# API REST
+fastapi>=0.109.0
+uvicorn[standard]>=0.27.0
+
+# Documentation OpenAPI (inclus dans FastAPI)
+# Pas de dependance supplementaire pour Swagger UI
+
+# Client SPARQL vers le triplestore
+SPARQLWrapper>=2.0.0
+
+# Optionnel : validation / schemas
+pydantic>=2.0.0
+pydantic-settings>=2.0.0
+
+# Optionnel : CORS pour l'extension navigateur
+# FastAPI inclut CORSMiddleware ; pas de dep supplementaire

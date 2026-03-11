@@ -1,0 +1,8 @@
+# PyTorch CPU uniquement - Repli si pas de GPU ou si requirements-cuda.txt a echoue.
+# Utiliser apres : pip install -r requirements.txt
+# Le code utilise util.device.get_device() : CUDA si disponible, sinon CPU automatiquement.
+
+--extra-index-url https://download.pytorch.org/whl/cpu
+torch
+torchvision
+torchaudio

@@ -1,0 +1,13 @@
+# INF6253 Projet 2 - Dependances de base (sans PyTorch)
+# Installer en premier. Puis : pip install -r requirements-cuda.txt (priorite GPU)
+# ou pip install -r requirements-cpu.txt (repli CPU).
+# Python 3.10+. Teste sur Linux et Windows.
+
+# --- Partie 1 : Analyse des ontologies GO ---
+rdflib>=7.0.0
+owlready2>=0.47
+
+# --- Utilitaires ---
+SPARQLWrapper>=2.0.0
+
+# --- PyTorch : NE PAS installer ici. Utiliser requirements-cuda.txt (priorite) ou requirements-cpu.txt (repli). ---

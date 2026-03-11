@@ -1,0 +1,13 @@
+/* Styles de la popup de configuration de l’extension GO Evolution */
+/* Mise en page simple : sections, bouton Enregistrer */
+
+body {
+  font-family: sans-serif;
+  padding: 12px;
+  min-width: 280px;
+}
+h1 { font-size: 1.1rem; margin-bottom: 10px; }
+section { margin-bottom: 10px; }
+label { display: block; margin-bottom: 4px; }
+input[type="text"] { width: 100%; box-sizing: border-box; }
+#save { margin-top: 8px; }

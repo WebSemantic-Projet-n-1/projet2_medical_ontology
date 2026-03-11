@@ -1,0 +1,10 @@
+/* Styles pour le badge et la popup d’évolution GO injectés par content.js */
+/* Badge : petit indicateur (Stable / Modifié / Déprécié / Nouveau) */
+/* Popup détail : encadré avec définitions, hiérarchie, liens */
+
+/* TODO: .go-evolution-badge { ... } */
+/* TODO: .go-evolution-badge.stable { color: green; } */
+/* TODO: .go-evolution-badge.modified { color: orange; } */
+/* TODO: .go-evolution-badge.deprecated { color: red; } */
+/* TODO: .go-evolution-badge.new { color: blue; } */
+/* TODO: .go-evolution-details { ... } */
