@@ -1,32 +1,54 @@
 # Partie 1 : Analyse comparative des versions de GO
 
-## Device : CUDA en priorité, repli CPU
-
-Les scripts peuvent utiliser `util.device.get_device()` pour tout calcul PyTorch (traitements lourds, embeddings) : **CUDA** si disponible, sinon **CPU**. Exécuter depuis la **racine du projet** pour que l’import `from util.device import get_device` fonctionne.
-
 ## Rôle des scripts
 
 | Script | Rôle |
 |--------|------|
-| `load_ontologies.py` | Charge les deux OWL (ancienne + récente) avec rdflib/owlready2 ; expose structure (classes, propriétés, axiomes). |
-| `quantitative_analysis.py` | Pour le domaine choisi : nombre de classes, nouvelles, dépréciées, hiérarchie modifiée. |
-| `qualitative_analysis.py` | Pour 5 termes : comparaison définitions (rdfs:comment), position hiérarchique, relations (part-of, regulates, etc.). |
-| `reasoner_analysis.py` | Lance un raisonneur (HermiT/Pellet) sur chaque version ; temps de raisonnement et incohérences. |
+| `load_ontologies.py` | Charge les deux versions de GO et exporte les statistiques de base |
+| `quantitative_analysis.py` | Analyse quantitative du domaine DNA repair (classes, évolutions) |
+| `qualitative_analysis.py` | Analyse qualitative de 5 termes GO (définitions, hiérarchie, relations) |
+| `reasoner_analysis.py` | Raisonnement OWL avec HermiT et Pellet (cohérence, incohérences) |
 
-## Données
+## Prérequis
 
-- Télécharger les deux versions de GO (janvier 2026, octobre 2025) depuis [Zenodo 18422732](https://zenodo.org/records/18422732).
-- Placer les fichiers OWL dans un dossier connu (ex. `../data/` ou chemin configurable).
+Avoir complété la section "Installation des données GO (setup)" du README, avec les deux versions de GO extraites dans `data/`.
 
 ## Exécution
 
-Depuis la **racine du projet**, avec le venv activé (PyTorch : `requirements-cuda.txt` en priorité, `requirements-cpu.txt` en repli) :
+> HermiT/Pellet sur GO (~52k classes) requiert Java 25 et 12 Go de heap Java.
+
+### Scripts non-raisonneur (depuis la racine du projet)
 
 ```bash
+# Activer le venv
+source .venv/bin/activate      # Linux/macOS
+# .venv\Scripts\activate       # Windows PowerShell
+
 python analyse/load_ontologies.py
 python analyse/quantitative_analysis.py
 python analyse/qualitative_analysis.py
-python analyse/reasoner_analysis.py
 ```
 
-Documenter les résultats (tableaux, graphiques) dans le rapport.
+### Raisonneur HermiT / Pellet — via Docker (méthode recommandée)
+
+Depuis le dossier `analyse/` :
+
+```bash
+cd analyse
+
+# Premier lancement : build de l'image (~2 min)
+docker compose build reasoner
+
+# Lancer l'analyse (HermiT + Pellet sur les deux versions GO)
+docker compose run --rm reasoner
+```
+
+L'image embarque Java 25 et lance la JVM avec **`-Xmx12000M`** (12 Go de heap).
+Le conteneur est limité à **12 Go de RAM** (`mem_limit: 12g` dans `docker-compose.yml`).
+
+> **Docker Desktop** : vérifiez que le moteur Docker dispose d'au moins 14 Go de RAM
+> (Settings → Resources → Memory) pour absorber le heap + l'overhead JVM/OS.
+
+Les rapports sont écrits dans `analyse/result/reasoner/` sur la machine hôte.
+
+Prend environ 2 minutes pour HermiT sur oct-25.

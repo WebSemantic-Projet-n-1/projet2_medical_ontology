@@ -1,0 +1,9 @@
+# Dépendances minimales pour faire tourner analyse/reasoner_analysis.py
+# dans le conteneur Docker (Java 25 déjà fourni par l'image de base).
+#
+# Usage : installé automatiquement par le Dockerfile dans analyse/.
+
+owlready2>=0.47
+rdflib>=7.0.0
+pandas>=2.0.0
+

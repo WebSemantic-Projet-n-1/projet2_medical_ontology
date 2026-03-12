@@ -1,0 +1,11 @@
+services:
+  reasoner:
+    build:
+      context: ..
+      dockerfile: analyse/Dockerfile
+    volumes:
+      # Données OWL Gene Ontology
+      - ../data:/app/data:ro
+      # Résultats (JSON, Markdown)
+      - ./result:/app/analyse/result
+
