@@ -134,7 +134,7 @@ Le code utilise `util.device.get_device()` : il choisit **CUDA si disponible, si
 
 ## 4. Données et domaines
 
-- **GO** : deux versions (ex. janvier 2026, octobre 2025) depuis [Zenodo 18422732](https://zenodo.org/records/18422732).
+- **GO** : deux versions (ex. janvier 2026, octobre 2025) depuis [Zenodo 17382285](https://zenodo.org/records/17382285) et [Zenodo 18422732](https://zenodo.org/records/18422732).
 - **Domaines suggérés** (un à choisir) :
   - Réparation de l’ADN (DNA repair) : GO:0006281
   - Apoptose : GO:0012501
@@ -143,7 +143,85 @@ Le code utilise `util.device.get_device()` : il choisit **CUDA si disponible, si
 
 ---
 
-## 5. Utilisation rapide
+## 5. Installation des données GO (setup)
+
+Les fichiers de données Gene Ontology ne sont **pas** versionnés dans le dépôt : vous devez les télécharger depuis Zenodo puis les placer dans `data/`.
+
+### 5.1 Téléchargement des archives Zenodo
+
+1. **Version octobre 2025**  
+   - Aller sur la page Zenodo : `https://zenodo.org/records/17382285`.  
+   - Télécharger l’archive.
+
+2. **Version janvier 2026**  
+   - Aller sur la page Zenodo : `https://zenodo.org/records/18422732`
+   - Télécharger l’archive.
+
+Placez ces deux fichiers `.tgz` dans un dossier temporaire (ou directement dans `data/` si vous préférez).
+
+### 5.2 Renommage des archives
+
+Pour rester cohérent avec les chemins utilisés dans les scripts, on adopte la convention suivante (dans le dossier racine du projet, ou dans `data/`) :
+
+- Renommer l’archive **octobre 2025** en `go-release-archive-10-25.tgz`
+- Renommer l’archive **janvier 2026** en `go-release-archive-01-26.tgz`
+
+L’important est que, après extraction, vous obteniez dans `data/` des dossiers :
+
+- `data/gene-ontology-10-25/...`
+- `data/gene-ontology-01-26/...`
+
+### 5.3 Extraction des fichiers (.tgz → .tar → dossier)
+
+Sous **Linux / macOS** (bash) :
+
+```bash
+cd data
+
+mkdir gene-ontology-01-26
+mkdir gene-ontology-10-25
+
+tar -xvf go-release-archive-10-25.tgz -C gene-ontology-10-25
+tar -xvf go-release-archive-01-26.tgz -C gene-ontology-01-26
+```
+
+Sous **Windows (PowerShell, avec tar intégré)** :
+
+```powershell
+cd .\data
+
+mkdir gene-ontology-01-26
+mkdir gene-ontology-10-25
+
+# Extraction
+tar -xvf .\go-release-archive-10-25.tgz -C .\gene-ontology-10-25
+tar -xvf .\go-release-archive-01-26.tgz -C .\gene-ontology-01-26
+```
+
+Selon la structure interne de l’archive Zenodo, il se peut qu’une première extraction crée un fichier `.tar`, puis une seconde extraction crée le dossier. Dans ce cas :
+
+```bash
+# Étape 1 : .tgz -> .tar
+tar -xvf go-release-archive-10-25.tgz
+
+# Étape 2 : .tar -> dossier dans data/
+tar -xvf go-release-archive-10-25.tar -C gene-ontology-10-25
+```
+
+Au final, vous devez obtenir notamment :
+
+- `data/gene-ontology-10-25/data/ontology/go.owl`
+- `data/gene-ontology-01-26/data/ontology/go.owl`
+
+Ces chemins correspondent à ceux utilisés par les scripts d’analyse (par exemple `analyse/load_ontologies.py`).
+
+---
+
+## 6. Raisonneur OWL via Docker (sans installer Java)
+
+Le script `analyse/reasoner_analysis.py` nécessite Java 25 (pour Pellet). Si vous ne voulez pas installer Java localement, vous pouvez l'exécuter dans un conteneur Docker — Java 25 est déjà inclus dans l'image.
+
+## 7. Utilisation rapide (sans Docker)
 
 - **Partie 1 (analyse)** : exécuter les scripts dans `analyse/` après téléchargement des OWL (voir `analyse/README.md`). Pour toute étape pouvant utiliser le GPU (ex. traitements batch, embeddings), les scripts s’appuient sur `util.device` (CUDA prioritaire, CPU en repli).
 - **Partie 2 (service web)** : lancer l’API depuis `service-web/` (voir `service-web/README.md`), triplestore devant être démarré (voir `triplestore/README.md`).
@@ -151,7 +229,7 @@ Le code utilise `util.device.get_device()` : il choisit **CUDA si disponible, si
 
 ---
 
-## 6. Livrable Moodle
+## 8. Livrable Moodle
 
 - **Nom du fichier** : `INF6253-P2-EquipeN.zip` (N = numéro/lettre du groupe).
 - **Contenu** : code source, `README.txt`, rapport PDF. Structure détaillée dans l’énoncé du projet.
@@ -159,7 +237,7 @@ Le code utilise `util.device.get_device()` : il choisit **CUDA si disponible, si
 
 ---
 
-## 7. Références
+## 9. Références
 
 - Gene Ontology : <https://geneontology.org/docs/>
 - OWL 2 : <https://www.w3.org/TR/owl2-overview/>
