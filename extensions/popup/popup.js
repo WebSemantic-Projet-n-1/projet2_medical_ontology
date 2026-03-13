@@ -58,7 +58,7 @@ async function loadStats(apiUrl, domainId, statsEl, apiBadgeEl) {
     const resp = await fetch(`${apiUrl}/api/domain/${domainId}/stats`);
     if (!resp.ok) throw new Error(resp.status);
     const s = await resp.json();
-    statsEl.textContent = `${s.count_new || "?"} classes, ${s.new_classes || 0} nouvelles, ${s.deprecated || 0} dépréciées`;
+    statsEl.textContent = `${s.count_new ?? "?"} classes, ${s.new_classes ?? 0} nouvelles, ${s.deprecated ?? 0} dépréciées`;
     setApiBadge(apiBadgeEl, true);
   } catch {
     statsEl.textContent = "Indisponible";
