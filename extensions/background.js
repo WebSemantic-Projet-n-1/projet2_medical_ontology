@@ -48,7 +48,8 @@ function setTabIcon(tabId, state) {
     return;
   }
   LOG(`icon → ${state} (tab ${tabId})`);
-  toolbarAction.setIcon({ tabId, path: ext.browser ? FIREFOX_ICON_PATHS[state] : CHROME_ICON_PATHS[state] });
+  const paths = globalThis.browser ? FIREFOX_ICON_PATHS : CHROME_ICON_PATHS;
+  toolbarAction.setIcon({ tabId, path: paths[state] });
 }
 
 // ---------------------------------------------------------------------------

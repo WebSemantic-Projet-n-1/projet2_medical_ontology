@@ -125,6 +125,7 @@ async function loadStats(apiUrl, domainId, statsEl, apiBadgeEl) {
   } catch (err) {
     // Network failure or fetch rejection (offline, CORS, etc.)
     statsEl.textContent = "Indisponible";
+    console.error(err);
     setApiBadge(apiBadgeEl, false);
   }
 }
