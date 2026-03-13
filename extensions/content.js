@@ -14,6 +14,26 @@ const STATUS_LABELS = {
   new: "Nouveau",
 };
 
+/**
+ * Validate and normalize a URL for use in href attributes.
+ * Only http and https schemes are allowed; otherwise returns null.
+ */
+function normalizeReleaseNotesUrl(url) {
+  if (!url || typeof url !== "string") {
+    return null;
+  }
+  try {
+    const base = (globalThis && globalThis.location && globalThis.location.href) ? globalThis.location.href : undefined;
+    const parsed = new URL(url, base);
+    if (parsed.protocol === "http:" || parsed.protocol === "https:") {
+      return parsed.href;
+    }
+  } catch (e) {
+    // Invalid URL, fall through and return null
+  }
+  return null;
+}
+
 // ---------------------------------------------------------------------------
 // 1. Extraction du GO ID
 // ---------------------------------------------------------------------------
@@ -78,6 +98,8 @@ function buildDetailsPanel(d) {
   const showTree = (d.hierarchy_old || d.hierarchy_new) &&
     d.hierarchy_old !== d.hierarchy_new;
 
+  const safeReleaseNotesUrl = normalizeReleaseNotesUrl(d.release_notes_url);
+
   panel.innerHTML = `
     <div class="go-evo-details-header">
       <h3>${esc(d.go_id)} — ${esc(d.label)}</h3>
@@ -97,7 +119,7 @@ function buildDetailsPanel(d) {
     <div class="go-evo-details-footer">
       <span>Statut : <strong>${esc(STATUS_LABELS[d.status] || d.status)}</strong></span>
       ${d.change_date ? `<span>Date : ${esc(d.change_date)}</span>` : ""}
-      ${d.release_notes_url ? `<a href="${esc(d.release_notes_url)}" target="_blank" rel="noopener">Release notes</a>` : ""}
+      ${safeReleaseNotesUrl ? `<a href="${esc(safeReleaseNotesUrl)}" target="_blank" rel="noopener">Release notes</a>` : ""}
     </div>
   `;
 
