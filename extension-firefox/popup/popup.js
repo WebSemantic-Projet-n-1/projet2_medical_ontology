@@ -5,43 +5,55 @@
 const DEFAULTS = {
   domain: "0006281",
   apiUrl: "http://localhost:8000",
-  cacheEnabled: true,
 };
 
 document.addEventListener("DOMContentLoaded", async () => {
-  const domainEl = document.getElementById("domain");
-  const apiUrlEl = document.getElementById("apiUrl");
-  const cacheEl = document.getElementById("cacheEnabled");
-  const saveBtn = document.getElementById("save");
-  const statsEl = document.getElementById("stats");
+  const domainEl      = document.getElementById("domain");
+  const apiUrlEl      = document.getElementById("apiUrl");
+  const saveBtn       = document.getElementById("save");
+  const clearCacheBtn = document.getElementById("clearCache");
+  const statsEl       = document.getElementById("stats");
+  const apiBadgeEl    = document.getElementById("api-badge");
 
   const stored = await browser.storage.local.get(Object.keys(DEFAULTS));
-  domainEl.value = stored.domain || DEFAULTS.domain;
-  apiUrlEl.value = stored.apiUrl || DEFAULTS.apiUrl;
-  cacheEl.checked = stored.cacheEnabled ?? DEFAULTS.cacheEnabled;
+  domainEl.value = stored.domain  || DEFAULTS.domain;
+  apiUrlEl.value = stored.apiUrl  || DEFAULTS.apiUrl;
 
-  loadStats(stored.apiUrl || DEFAULTS.apiUrl, domainEl.value, statsEl);
+  loadStats(stored.apiUrl || DEFAULTS.apiUrl, domainEl.value, statsEl, apiBadgeEl);
 
-  saveBtn.addEventListener("click", async () => {
-    await browser.storage.local.set({
-      domain: domainEl.value,
-      apiUrl: apiUrlEl.value,
-      cacheEnabled: cacheEl.checked,
-    });
-    saveBtn.textContent = "Enregistré !";
-    setTimeout(() => { saveBtn.textContent = "Enregistrer"; }, 1200);
-
-    loadStats(apiUrlEl.value, domainEl.value, statsEl);
+  clearCacheBtn.addEventListener("click", async () => {
+    const all = await browser.storage.local.get(null);
+    const cacheKeys = Object.keys(all).filter(k => k.startsWith("cache_"));
+    if (cacheKeys.length) await browser.storage.local.remove(cacheKeys);
+    clearCacheBtn.textContent = "Cache vidé !";
+    setTimeout(() => { clearCacheBtn.textContent = "Vider le cache"; }, 1500);
   });
 });
 
-async function loadStats(apiUrl, domainId, el) {
+function setApiBadge(el, ok) {
+  el.classList.remove("api-badge--ok", "api-badge--error", "api-badge--unknown");
+  if (ok === true) {
+    el.classList.add("api-badge--ok");
+    el.textContent = "✓ API connectée";
+  } else if (ok === false) {
+    el.classList.add("api-badge--error");
+    el.textContent = "✗ API indisponible";
+  } else {
+    el.classList.add("api-badge--unknown");
+    el.textContent = "— Vérification…";
+  }
+}
+
+async function loadStats(apiUrl, domainId, statsEl, apiBadgeEl) {
+  setApiBadge(apiBadgeEl, null);
   try {
     const resp = await fetch(`${apiUrl}/api/domain/${domainId}/stats`);
     if (!resp.ok) throw new Error(resp.status);
-    const s = resp.json ? await resp.json() : {};
-    el.textContent = `${s.count_new || "?"} classes, ${s.new_classes || 0} nouvelles, ${s.deprecated || 0} dépréciées`;
+    const s = await resp.json();
+    statsEl.textContent = `${s.count_new || "?"} classes, ${s.new_classes || 0} nouvelles, ${s.deprecated || 0} dépréciées`;
+    setApiBadge(apiBadgeEl, true);
   } catch {
-    el.textContent = "API indisponible";
+    statsEl.textContent = "Indisponible";
+    setApiBadge(apiBadgeEl, false);
   }
 }

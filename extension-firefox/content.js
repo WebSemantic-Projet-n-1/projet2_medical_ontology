@@ -75,6 +75,9 @@ function buildDetailsPanel(d) {
   panel.className = "go-evo-details";
   panel.style.display = "none";
 
+  const showTree = (d.hierarchy_old || d.hierarchy_new) &&
+    d.hierarchy_old !== d.hierarchy_new;
+
   panel.innerHTML = `
     <div class="go-evo-details-header">
       <h3>${esc(d.go_id)} — ${esc(d.label)}</h3>
@@ -84,16 +87,13 @@ function buildDetailsPanel(d) {
       <div class="go-evo-col">
         <h4>Ancienne définition</h4>
         <p>${esc(d.definition_old) || "<em>N/A</em>"}</p>
-        <h4>Hiérarchie ancienne</h4>
-        <p>${esc(d.hierarchy_old) || "<em>N/A</em>"}</p>
       </div>
       <div class="go-evo-col">
         <h4>Nouvelle définition</h4>
         <p>${esc(d.definition_new) || "<em>N/A</em>"}</p>
-        <h4>Hiérarchie nouvelle</h4>
-        <p>${esc(d.hierarchy_new) || "<em>N/A</em>"}</p>
       </div>
     </div>
+    ${showTree ? buildTreeComparison(d.hierarchy_old, d.hierarchy_new) : ""}
     <div class="go-evo-details-footer">
       <span>Statut : <strong>${esc(STATUS_LABELS[d.status] || d.status)}</strong></span>
       ${d.change_date ? `<span>Date : ${esc(d.change_date)}</span>` : ""}
@@ -106,6 +106,70 @@ function buildDetailsPanel(d) {
   });
 
   return panel;
+}
+
+// ---------------------------------------------------------------------------
+// 3b. Comparative hierarchy tree
+// ---------------------------------------------------------------------------
+
+function parseHierarchy(str) {
+  if (!str) return [];
+  return str.split(" > ").map((s) => s.trim()).filter(Boolean);
+}
+
+function buildTreeComparison(oldStr, newStr) {
+  const oldNodes = parseHierarchy(oldStr);
+  const newNodes = parseHierarchy(newStr);
+
+  const oldSet = new Set(oldNodes);
+  const newSet = new Set(newNodes);
+
+  let firstDiffIdx = 0;
+  while (
+    firstDiffIdx < oldNodes.length &&
+    firstDiffIdx < newNodes.length &&
+    oldNodes[firstDiffIdx] === newNodes[firstDiffIdx]
+  ) {
+    firstDiffIdx++;
+  }
+
+  return `
+    <div class="go-evo-tree-section">
+      <h4>Arbre hiérarchique comparatif</h4>
+      <div class="go-evo-tree-wrap">
+        <div class="go-evo-tree-col">
+          <span class="go-evo-tree-label">Ancienne version</span>
+          ${renderTree(oldNodes, newSet, firstDiffIdx, "removed")}
+        </div>
+        <div class="go-evo-tree-col">
+          <span class="go-evo-tree-label">Nouvelle version</span>
+          ${renderTree(newNodes, oldSet, firstDiffIdx, "added")}
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function renderTree(nodes, otherSet, firstDiffIdx, diffClass) {
+  if (!nodes.length) return '<div class="go-evo-tree-empty">N/A</div>';
+
+  return nodes
+    .map((node, i) => {
+      let cls = "go-evo-tree-node";
+      if (i >= firstDiffIdx && !otherSet.has(node)) {
+        cls += ` go-evo-tree-${diffClass}`;
+      } else if (i >= firstDiffIdx) {
+        cls += " go-evo-tree-moved";
+      }
+      const indent = i * 18;
+      const connector = i > 0
+        ? `<span class="go-evo-tree-branch" style="width:${indent}px"></span>`
+        : "";
+      return `<div class="${cls}" style="padding-left:${indent + 6}px">
+        ${connector}${esc(node)}
+      </div>`;
+    })
+    .join("");
 }
 
 function esc(str) {

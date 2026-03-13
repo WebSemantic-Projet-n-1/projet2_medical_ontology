@@ -3,10 +3,15 @@
 <head>
   <meta charset="UTF-8">
   <title>GO Evolution - Options</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="popup.css">
 </head>
 <body>
   <h1>GO Evolution</h1>
+  <div id="api-badge" class="api-badge api-badge--unknown">—</div>
+
   <section>
     <label>Domaine d'intérêt</label>
     <select id="domain">
@@ -15,17 +20,20 @@
       <option value="0006629">Métabolisme des lipides</option>
     </select>
   </section>
-  <section>
-    <label>URL du service web</label>
+
+  <section class="inline-row">
+    <label for="apiUrl">URL du service web</label>
     <input type="text" id="apiUrl" value="http://localhost:8000" placeholder="http://localhost:8000">
   </section>
+
   <section>
-    <label><input type="checkbox" id="cacheEnabled" checked> Activer le cache local</label>
+    <p class="stats-line">Statistiques : <span id="stats">-</span></p>
   </section>
-  <section>
-    <p>Statistiques : <span id="stats">-</span></p>
+
+  <section class="actions">
+    <button id="clearCache" class="btn-secondary">Vider le cache</button>
   </section>
-  <button id="save">Enregistrer</button>
+
   <script src="popup.js"></script>
 </body>
 </html>

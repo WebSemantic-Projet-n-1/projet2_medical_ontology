@@ -1,6 +1,173 @@
-body { font-family: sans-serif; padding: 12px; min-width: 280px; }
-h1 { font-size: 1.1rem; margin-bottom: 10px; }
-section { margin-bottom: 10px; }
-label { display: block; margin-bottom: 4px; }
-input[type="text"] { width: 100%; box-sizing: border-box; }
-#save { margin-top: 8px; }
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
+
+/* ===== Base ===== */
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  color: #1a1a2e;
+  background: #f5f6fa;
+  padding: 14px 16px 16px;
+  min-width: 300px;
+  margin: 0;
+}
+
+/* ===== Title ===== */
+
+h1 {
+  text-align: center;
+  font-size: 1.05rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  margin: 0 0 8px;
+  color: #111827;
+}
+
+/* ===== API status badge ===== */
+
+.api-badge {
+  display: block;
+  width: fit-content;
+  margin: 0 auto 14px;
+  padding: 3px 12px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  transition: background 0.2s, color 0.2s;
+}
+
+.api-badge--ok {
+  background: #dcfce7;
+  color: #166534;
+  border: 1px solid #86efac;
+}
+
+.api-badge--error {
+  background: #fee2e2;
+  color: #991b1b;
+  border: 1px solid #fca5a5;
+}
+
+.api-badge--unknown {
+  background: #f1f5f9;
+  color: #64748b;
+  border: 1px solid #cbd5e1;
+}
+
+/* ===== Sections ===== */
+
+section {
+  margin-bottom: 10px;
+}
+
+label {
+  display: block;
+  font-weight: 500;
+  color: #374151;
+  margin-bottom: 4px;
+  white-space: nowrap;
+}
+
+select,
+input[type="text"] {
+  width: 100%;
+  padding: 6px 8px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-family: inherit;
+  font-size: 12px;
+  color: #111827;
+  background: #fff;
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+select:focus,
+input[type="text"]:focus {
+  border-color: #6366f1;
+  box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.15);
+}
+
+/* ===== Inline URL row ===== */
+
+.inline-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.inline-row label {
+  margin-bottom: 0;
+  flex-shrink: 0;
+}
+
+.inline-row input {
+  flex: 1;
+  min-width: 0;
+}
+
+/* ===== Stats line ===== */
+
+.stats-line {
+  margin: 0;
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.stats-line span {
+  color: #374151;
+  font-weight: 500;
+}
+
+/* ===== Action buttons row ===== */
+
+.actions {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.btn-primary,
+.btn-secondary {
+  padding: 6px 18px;
+  border-radius: 6px;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  transition: background 0.15s, transform 0.1s;
+}
+
+.btn-primary {
+  background: #6366f1;
+  color: #fff;
+}
+
+.btn-primary:hover {
+  background: #4f46e5;
+}
+
+.btn-primary:active {
+  transform: scale(0.97);
+}
+
+.btn-secondary {
+  background: #e5e7eb;
+  color: #374151;
+  border: 1px solid #d1d5db;
+}
+
+.btn-secondary:hover {
+  background: #d1d5db;
+}
+
+.btn-secondary:active {
+  transform: scale(0.97);
+}
