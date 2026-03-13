@@ -1,32 +1,36 @@
 {
-  "manifest_version": 2,
+  "manifest_version": 3,
   "name": "GO Evolution",
   "version": "0.1.0",
   "description": "Affiche l'évolution des termes Gene Ontology (QuickGO, AmiGO, OLS)",
   "permissions": [
     "storage",
-    "activeTab",
+    "activeTab"
+  ],
+  "host_permissions": [
     "https://www.ebi.ac.uk/QuickGO/*",
     "http://amigo.geneontology.org/*",
     "https://www.ebi.ac.uk/ols/*",
+    "https://www.ebi.ac.uk/ols4/*",
     "http://localhost:8000/*"
   ],
   "background": {
-    "scripts": ["background.js"]
+    "service_worker": "background.js"
   },
   "content_scripts": [
     {
       "matches": [
         "https://www.ebi.ac.uk/QuickGO/term/*",
         "http://amigo.geneontology.org/amigo/term/*",
-        "https://www.ebi.ac.uk/ols/ontologies/go/terms/*"
+        "https://www.ebi.ac.uk/ols/ontologies/go/terms/*",
+        "https://www.ebi.ac.uk/ols4/ontologies/go/classes/*"
       ],
       "js": ["content.js"],
       "css": ["content.css"],
       "run_at": "document_idle"
     }
   ],
-  "browser_action": {
+  "action": {
     "default_popup": "popup/popup.html",
     "default_title": "GO Evolution - Options"
   }

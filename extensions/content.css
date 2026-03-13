@@ -1,0 +1,298 @@
+/* ===== GO Evolution — Badge ===== */
+
+.go-evo-badge {
+  position: fixed;
+  top: 12px;
+  right: 12px;
+  z-index: 2147483647;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font: bold 13px/1.4 system-ui, sans-serif;
+  color: #fff;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  user-select: none;
+}
+
+.go-evo-badge:hover {
+  transform: scale(1.06);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
+}
+
+.go-evo-stable     { background: #4caf50; }
+.go-evo-modified   { background: #ff9800; }
+.go-evo-deprecated { background: #f44336; }
+.go-evo-new        { background: #2196f3; }
+
+/* ===== Details panel (overlay) — Light / white theme ===== */
+
+.go-evo-details {
+  position: fixed;
+  top: 50px;
+  right: 12px;
+  z-index: 2147483646;
+  width: 640px;
+  max-height: 80vh;
+  overflow-y: auto;
+  background: #ffffff;
+  border: 1px solid #d0d7de;
+  border-radius: 10px;
+  box-shadow: 0 8px 24px rgba(140, 149, 159, 0.25);
+  font: 13px/1.5 'Segoe UI', system-ui, sans-serif;
+  color: #1f2328;
+  flex-direction: column;
+  scrollbar-color: #d0d7de #ffffff;
+}
+
+.go-evo-details::-webkit-scrollbar {
+  width: 6px;
+}
+.go-evo-details::-webkit-scrollbar-track {
+  background: #ffffff;
+}
+.go-evo-details::-webkit-scrollbar-thumb {
+  background: #d0d7de;
+  border-radius: 3px;
+}
+
+/* ===== Header ===== */
+
+.go-evo-details-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  background: #f6f8fa;
+  border-bottom: 1px solid #d0d7de;
+  border-radius: 10px 10px 0 0;
+}
+
+.go-evo-details-header h3 {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: #1f2328;
+}
+
+.go-evo-close {
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  color: #636c76;
+  line-height: 1;
+  padding: 0 4px;
+  transition: color 0.15s;
+}
+
+.go-evo-close:hover {
+  color: #1f2328;
+}
+
+/* ===== Body — two-column diff comparison ===== */
+
+.go-evo-details-body {
+  display: flex;
+  gap: 0;
+  padding: 0;
+  border-bottom: 1px solid #d0d7de;
+}
+
+.go-evo-col {
+  flex: 1;
+  min-width: 0;
+  padding: 12px 14px;
+}
+
+.go-evo-col:first-child {
+  border-right: 1px solid #d0d7de;
+  background: #fff8f8;
+}
+
+.go-evo-col:last-child {
+  background: #f8fff8;
+}
+
+.go-evo-col h4 {
+  margin: 0 0 6px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #636c76;
+}
+
+/* Removed (old / left) column label */
+.go-evo-col:first-child h4 {
+  color: #cf222e;
+}
+
+/* Added (new / right) column label */
+.go-evo-col:last-child h4 {
+  color: #1a7f37;
+}
+
+/* Definition text blocks */
+.go-evo-col p {
+  margin: 0;
+  padding: 8px 10px 8px 32px;
+  border-radius: 4px;
+  word-break: break-word;
+  font-size: 12.5px;
+  line-height: 1.6;
+  position: relative;
+}
+
+/* Removed definition — red GitHub light diff style */
+.go-evo-col:first-child p {
+  background: #ffebe9;
+  color: #82071e;
+}
+
+.go-evo-col:first-child p::before {
+  content: "−";
+  position: absolute;
+  left: 10px;
+  color: #cf222e;
+  font-weight: 700;
+  font-family: monospace;
+  font-size: 14px;
+  line-height: 1.5;
+  user-select: none;
+}
+
+/* Added definition — green GitHub light diff style */
+.go-evo-col:last-child p {
+  background: #e6ffec;
+  color: #116329;
+}
+
+.go-evo-col:last-child p::before {
+  content: "+";
+  position: absolute;
+  left: 10px;
+  color: #1a7f37;
+  font-weight: 700;
+  font-family: monospace;
+  font-size: 14px;
+  line-height: 1.5;
+  user-select: none;
+}
+
+/* ===== Comparative hierarchy tree ===== */
+
+.go-evo-tree-section {
+  padding: 10px 16px 14px;
+  border-bottom: 1px solid #d0d7de;
+}
+
+.go-evo-tree-section > h4 {
+  margin: 0 0 10px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #636c76;
+}
+
+.go-evo-tree-wrap {
+  display: flex;
+  gap: 12px;
+}
+
+.go-evo-tree-col {
+  flex: 1;
+  min-width: 0;
+  background: #f6f8fa;
+  border-radius: 6px;
+  padding: 10px 8px;
+  border: 1px solid #d0d7de;
+}
+
+.go-evo-tree-label {
+  display: block;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  color: #636c76;
+  margin-bottom: 8px;
+}
+
+.go-evo-tree-node {
+  position: relative;
+  padding: 3px 6px;
+  margin-bottom: 2px;
+  border-radius: 4px;
+  font-size: 12px;
+  line-height: 1.4;
+  color: #1f2328;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.go-evo-tree-node::before {
+  content: "└ ";
+  color: #8c959f;
+  font-family: monospace;
+}
+
+.go-evo-tree-node:first-child::before {
+  content: "● ";
+  color: #636c76;
+}
+
+.go-evo-tree-removed {
+  background: #ffebe9;
+  color: #82071e;
+  font-weight: 600;
+  border-left: 2px solid #cf222e;
+}
+
+.go-evo-tree-added {
+  background: #e6ffec;
+  color: #116329;
+  font-weight: 600;
+  border-left: 2px solid #1a7f37;
+}
+
+.go-evo-tree-moved {
+  background: #fff8c5;
+  color: #7d4e00;
+}
+
+.go-evo-tree-empty {
+  color: #8c959f;
+  font-style: italic;
+  font-size: 12px;
+  padding: 4px;
+}
+
+/* ===== Footer ===== */
+
+.go-evo-details-footer {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 10px 16px;
+  background: #f6f8fa;
+  border-top: 1px solid #d0d7de;
+  border-radius: 0 0 10px 10px;
+  font-size: 12px;
+  color: #636c76;
+}
+
+.go-evo-details-footer strong {
+  color: #1f2328;
+}
+
+.go-evo-details-footer a {
+  color: #0969da;
+  text-decoration: none;
+}
+
+.go-evo-details-footer a:hover {
+  text-decoration: underline;
+}
