@@ -17,6 +17,10 @@ const ICON_PATHS = {
 };
 
 function setTabIcon(tabId, state) {
+  if (typeof tabId !== "number") {
+    LOG(`icon → ${state} (no valid tabId, skipping setIcon)`);
+    return;
+  }
   LOG(`icon → ${state} (tab ${tabId})`);
   browser.browserAction.setIcon({ tabId, path: ICON_PATHS[state] });
 }
