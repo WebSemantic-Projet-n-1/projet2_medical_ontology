@@ -7,14 +7,19 @@
 const ext = globalThis.browser ?? globalThis.chrome;
 
 /**
+ * True when running in Firefox (browser.*), which natively returns Promises.
+ * False when running in Chrome MV2 (chrome.*), which uses callbacks.
+ */
+const USE_PROMISE_API = !!globalThis.browser;
+
+/**
  * Promisified wrapper for ext.storage.local.get.
- * Chrome MV2 uses callbacks; Firefox and Chrome MV3 return Promises.
+ * Branches by API type so the storage call is issued exactly once.
  * @param {string[]|null} keys
  * @returns {Promise<object>}
  */
 function storageGet(keys) {
-  const result = ext.storage.local.get(keys);
-  if (result && typeof result.then === "function") return result;
+  if (USE_PROMISE_API) return ext.storage.local.get(keys);
   return new Promise((resolve, reject) => {
     ext.storage.local.get(keys, (data) => {
       if (ext.runtime.lastError) reject(ext.runtime.lastError);
@@ -25,12 +30,12 @@ function storageGet(keys) {
 
 /**
  * Promisified wrapper for ext.storage.local.set.
+ * Branches by API type so the storage call is issued exactly once.
  * @param {object} items
  * @returns {Promise<void>}
  */
 function storageSet(items) {
-  const result = ext.storage.local.set(items);
-  if (result && typeof result.then === "function") return result;
+  if (USE_PROMISE_API) return ext.storage.local.set(items);
   return new Promise((resolve, reject) => {
     ext.storage.local.set(items, () => {
       if (ext.runtime.lastError) reject(ext.runtime.lastError);
@@ -41,12 +46,12 @@ function storageSet(items) {
 
 /**
  * Promisified wrapper for ext.storage.local.remove.
+ * Branches by API type so the storage call is issued exactly once.
  * @param {string[]} keys
  * @returns {Promise<void>}
  */
 function storageRemove(keys) {
-  const result = ext.storage.local.remove(keys);
-  if (result && typeof result.then === "function") return result;
+  if (USE_PROMISE_API) return ext.storage.local.remove(keys);
   return new Promise((resolve, reject) => {
     ext.storage.local.remove(keys, () => {
       if (ext.runtime.lastError) reject(ext.runtime.lastError);
