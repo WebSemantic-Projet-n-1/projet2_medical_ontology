@@ -1,6 +1,59 @@
 /**
- * Popup Firefox — sauvegarde et chargement des options GO Evolution.
+ * Popup — sauvegarde et chargement des options GO Evolution.
+ * Compatible Firefox (browser.*) et Chrome (chrome.*).
  */
+
+/** Cross-browser extension API handle. */
+const ext = globalThis.browser ?? globalThis.chrome;
+
+/**
+ * Promisified wrapper for ext.storage.local.get.
+ * Chrome MV2 uses callbacks; Firefox and Chrome MV3 return Promises.
+ * @param {string[]|null} keys
+ * @returns {Promise<object>}
+ */
+function storageGet(keys) {
+  const result = ext.storage.local.get(keys);
+  if (result && typeof result.then === "function") return result;
+  return new Promise((resolve, reject) => {
+    ext.storage.local.get(keys, (data) => {
+      if (ext.runtime.lastError) reject(ext.runtime.lastError);
+      else resolve(data);
+    });
+  });
+}
+
+/**
+ * Promisified wrapper for ext.storage.local.set.
+ * @param {object} items
+ * @returns {Promise<void>}
+ */
+function storageSet(items) {
+  const result = ext.storage.local.set(items);
+  if (result && typeof result.then === "function") return result;
+  return new Promise((resolve, reject) => {
+    ext.storage.local.set(items, () => {
+      if (ext.runtime.lastError) reject(ext.runtime.lastError);
+      else resolve();
+    });
+  });
+}
+
+/**
+ * Promisified wrapper for ext.storage.local.remove.
+ * @param {string[]} keys
+ * @returns {Promise<void>}
+ */
+function storageRemove(keys) {
+  const result = ext.storage.local.remove(keys);
+  if (result && typeof result.then === "function") return result;
+  return new Promise((resolve, reject) => {
+    ext.storage.local.remove(keys, () => {
+      if (ext.runtime.lastError) reject(ext.runtime.lastError);
+      else resolve();
+    });
+  });
+}
 
 const DEFAULTS = {
   domain: "0006281",
@@ -15,14 +68,14 @@ document.addEventListener("DOMContentLoaded", async () => {
   const statsEl       = document.getElementById("stats");
   const apiBadgeEl    = document.getElementById("api-badge");
 
-  const stored = await browser.storage.local.get(Object.keys(DEFAULTS));
+  const stored = await storageGet(Object.keys(DEFAULTS));
   domainEl.value = stored.domain  || DEFAULTS.domain;
   apiUrlEl.value = stored.apiUrl  || DEFAULTS.apiUrl;
 
   loadStats(stored.apiUrl || DEFAULTS.apiUrl, domainEl.value, statsEl, apiBadgeEl);
 
   saveBtn.addEventListener("click", async () => {
-    await browser.storage.local.set({
+    await storageSet({
       domain: domainEl.value,
       apiUrl: apiUrlEl.value,
     });
@@ -30,9 +83,9 @@ document.addEventListener("DOMContentLoaded", async () => {
   });
 
   clearCacheBtn.addEventListener("click", async () => {
-    const all = await browser.storage.local.get(null);
+    const all = await storageGet(null);
     const cacheKeys = Object.keys(all).filter(k => k.startsWith("cache_"));
-    if (cacheKeys.length) await browser.storage.local.remove(cacheKeys);
+    if (cacheKeys.length) await storageRemove(cacheKeys);
     clearCacheBtn.textContent = "Cache vidé !";
     setTimeout(() => { clearCacheBtn.textContent = "Vider le cache"; }, 1500);
   });
