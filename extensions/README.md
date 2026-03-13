@@ -3,6 +3,8 @@
 Shared source for Chrome (MV3) and Firefox (MV2). The active manifest is always `manifest.json`.
 Named copies (`manifest-chrome.json`, `manifest-firefox.json`) are the source of truth for each browser.
 
+Before turning on the extension, build the manifest for your browser of choice.
+
 ## Switching targets
 
 **Windows** — run `build.ps1` from the `extensions/` folder:

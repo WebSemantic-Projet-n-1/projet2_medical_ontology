@@ -18,10 +18,10 @@
   "content_scripts": [
     {
       "matches": [
-        "*://www.ebi.ac.uk/QuickGO/term/*",
-        "*://amigo.geneontology.org/amigo/term/*",
-        "*://www.ebi.ac.uk/ols/ontologies/go/terms/*",
-        "*://www.ebi.ac.uk/ols4/ontologies/go/classes/*"
+        "https://www.ebi.ac.uk/QuickGO/term/*",
+        "https://amigo.geneontology.org/amigo/term/*",
+        "https://www.ebi.ac.uk/ols/ontologies/go/terms/*",
+        "https://www.ebi.ac.uk/ols4/ontologies/go/classes/*"
       ],
       "js": ["content.js"],
       "css": ["content.css"],

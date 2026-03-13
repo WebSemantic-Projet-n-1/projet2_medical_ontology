@@ -41,6 +41,9 @@ function sendMessageCompat(message) {
 }
 
 const GO_ID_REGEX = /GO:\d{7}/;
+// OLS4 encodes terms as IRIs containing GO_XXXXXXX (underscore) rather than GO:XXXXXXX.
+// Example URL: .../ols4/ontologies/go/classes/http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FGO_0006281
+const GO_UNDERSCORE_REGEX = /GO_(\d{7})/;
 
 const STATUS_LABELS = {
   stable: "Stable",
@@ -74,12 +77,25 @@ function normalizeReleaseNotesUrl(url) {
 // ---------------------------------------------------------------------------
 
 function extractGoId() {
-  const urlMatch = GO_ID_REGEX.exec(globalThis.location.href);
+  const href = globalThis.location.href;
+
+  // Standard colon form — QuickGO, AmiGO, OLS3 all put GO:XXXXXXX directly in the URL.
+  const urlMatch = GO_ID_REGEX.exec(href);
   if (urlMatch) {
-    LOG(`GO ID found in URL: ${urlMatch[0]}`);
+    LOG(`GO ID found in URL (colon form): ${urlMatch[0]}`);
     return urlMatch[0];
   }
 
+  // OLS4 embeds the term as an IRI in the URL path: …/obo/GO_XXXXXXX (underscore).
+  // The digits and underscore are never percent-encoded, so matching the raw href works.
+  const ols4Match = GO_UNDERSCORE_REGEX.exec(href);
+  if (ols4Match) {
+    const goId = `GO:${ols4Match[1]}`;
+    LOG(`GO ID found in OLS4 URL (underscore IRI form): ${goId}`);
+    return goId;
+  }
+
+  // DOM fallback — catches GO:XXXXXXX displayed in page headings on all sites.
   const heading = document.querySelector("h1, h2, .ontology-detail-title");
   if (heading) {
     const domMatch = GO_ID_REGEX.exec(heading.textContent);
