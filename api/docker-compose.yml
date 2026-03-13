@@ -1,0 +1,64 @@
+services:
+
+  # ── Serveur Apache Jena Fuseki ───────────────────────────────────────────────
+  fuseki:
+    image: stain/jena-fuseki:latest
+    container_name: fuseki
+    ports:
+      - "3030:3030"
+    env_file: .env
+    environment:
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD}
+      JVM_ARGS: ${JVM_ARGS}
+    volumes:
+      # Configuration du dataset TDB2 (graphes nommés ds/sparql, ds/query, etc.)
+      - ./triplestore/config/fuseki.ttl:/fuseki/config.ttl:ro
+      # Stockage persistant TDB2 — monté au niveau FUSEKI_BASE pour que
+      # Docker hérite des permissions UID 9008 (user fuseki) définies dans l'image.
+      - fuseki-data:/fuseki
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:3030/$$/ping || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 8
+      start_period: 30s
+    restart: unless-stopped
+
+  # ── Chargement initial des fichiers OWL (one-shot, idempotent) ───────────────
+  #
+  # Ce service démarre une seule fois après que Fuseki est prêt (health check),
+  # charge go_2025-10.owl et go_2026-01.owl dans deux graphes nommés via le
+  # Graph Store Protocol (HTTP PUT), puis s'arrête.
+  #
+  # Graphes créés :
+  #   http://purl.obolibrary.org/obo/go/version/2025-10
+  #   http://purl.obolibrary.org/obo/go/version/2026-01
+  #
+  # Un fichier marqueur (.data-loaded) est écrit dans le volume pour éviter
+  # de recharger les données lors des redémarrages suivants.
+  fuseki-loader:
+    image: curlimages/curl:latest
+    container_name: fuseki-loader
+    depends_on:
+      fuseki:
+        condition: service_healthy
+    # tr -d '\r' neutralise les fins de ligne CRLF si le fichier est édité sur Windows
+    entrypoint: ["/bin/sh", "-c", "tr -d '\\r' < /scripts/load-data.sh | /bin/sh"]
+    env_file: .env
+    environment:
+      FUSEKI_URL: ${FUSEKI_URL}
+      FUSEKI_DATASET: ${FUSEKI_DATASET}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD}
+    volumes:
+      # Fichiers OWL sources (lecture seule) — dossier data/ à la racine du projet
+      - ../data:/data:ro
+      # Script de chargement
+      - ./triplestore/config/load-data.sh:/scripts/load-data.sh:ro
+      # Volume partagé avec Fuseki — même point de montage pour que le marqueur
+      # .data-loaded soit visible des deux conteneurs.
+      - fuseki-data:/fuseki
+    restart: "no"
+
+volumes:
+  fuseki-data:
+    name: go-fuseki-data
