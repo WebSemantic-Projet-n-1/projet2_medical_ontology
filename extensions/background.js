@@ -12,12 +12,27 @@ const LOG = (...args) => console.log("[GO-Evo BG]", ...args);
 
 const CACHE_TTL_MS = 24 * 60 * 60 * 1000; // 24 h
 
-const ICON_PATHS = {
+// djb2 hash — used to namespace cache keys by apiUrl without storing the full URL
+function hashStr(s) {
+  let h = 5381;
+  for (let i = 0; i < s.length; i++) h = (h * 33) ^ s.charCodeAt(i);
+  return (h >>> 0).toString(36);
+}
+
+const FIREFOX_ICON_PATHS = {
   grey:   "icons/icon-grey.svg",
   yellow: "icons/icon-yellow.svg",
   green:  "icons/icon-green.svg",
   red:    "icons/icon-red.svg",
   orange: "icons/icon-orange.svg",
+};
+
+const CHROME_ICON_PATHS = {
+  grey: "icons/icon-grey.png",
+  yellow: "icons/icon-yellow.png",
+  green: "icons/icon-green.png",
+  red: "icons/icon-red.png",
+  orange: "icons/icon-orange.png",
 };
 
 // Abstraction for toolbar/action API across Firefox MV2/MV3 and Chrome MV3
@@ -33,15 +48,15 @@ function setTabIcon(tabId, state) {
     return;
   }
   LOG(`icon → ${state} (tab ${tabId})`);
-  toolbarAction.setIcon({ tabId, path: ICON_PATHS[state] });
+  toolbarAction.setIcon({ tabId, path: ext.browser ? FIREFOX_ICON_PATHS[state] : CHROME_ICON_PATHS[state] });
 }
 
 // ---------------------------------------------------------------------------
 // Cache
 // ---------------------------------------------------------------------------
 
-async function getCached(goId) {
-  const key = `cache_${goId}`;
+async function getCached(goId, apiUrl) {
+  const key = `cache_${hashStr(apiUrl)}_${goId}`;
   const result = await ext.storage.local.get(key);
   const entry = result[key];
   if (entry && Date.now() - entry.timestamp < CACHE_TTL_MS) {
@@ -52,8 +67,8 @@ async function getCached(goId) {
   return null;
 }
 
-async function setCached(goId, data) {
-  const key = `cache_${goId}`;
+async function setCached(goId, data, apiUrl) {
+  const key = `cache_${hashStr(apiUrl)}_${goId}`;
   await ext.storage.local.set({ [key]: { data, timestamp: Date.now() } });
   LOG(`cache SET for ${goId}`);
 }
@@ -66,7 +81,7 @@ async function fetchTermDiff(goId, tabId) {
   const settings = await ext.storage.local.get(["apiUrl"]);
   const apiUrl = settings.apiUrl || "http://localhost:8000";
 
-  const cached = await getCached(goId);
+  const cached = await getCached(goId, apiUrl);
   if (cached) {
     setTabIcon(tabId, "green");
     return cached;
@@ -91,7 +106,7 @@ async function fetchTermDiff(goId, tabId) {
   }
 
   const data = await resp.json();
-  await setCached(goId, data);
+  await setCached(goId, data, apiUrl);
 
   setTabIcon(tabId, "green");
   return data;

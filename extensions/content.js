@@ -13,27 +13,27 @@ const RUNTIME_API = (globalThis && (globalThis.browser || globalThis.chrome)) ||
  */
 function sendMessageCompat(message) {
   return new Promise((resolve, reject) => {
-    if (!RUNTIME_API || !RUNTIME_API.runtime || typeof RUNTIME_API.runtime.sendMessage !== "function") {
+    if (!RUNTIME_API?.runtime?.sendMessage) {
       reject(new Error("runtime messaging API is not available"));
       return;
     }
 
+    // Firefox: browser.runtime.sendMessage is Promise-based and throws on callback argument
+    if (globalThis.browser?.runtime) {
+      globalThis.browser.runtime.sendMessage(message).then(resolve, reject);
+      return;
+    }
+
+    // Chrome: callback-based API with lastError
     try {
-      const maybePromise = RUNTIME_API.runtime.sendMessage(message, (response) => {
-        // Handle Chrome-style callback with lastError
-        const runtime = RUNTIME_API && RUNTIME_API.runtime;
-        const lastError = runtime && runtime.lastError;
+      RUNTIME_API.runtime.sendMessage(message, (response) => {
+        const lastError = RUNTIME_API.runtime?.lastError;
         if (lastError) {
           reject(new Error(lastError.message || String(lastError)));
         } else {
           resolve(response);
         }
       });
-
-      // If sendMessage returned a Promise/thenable (Firefox / polyfill), use it instead.
-      if (maybePromise && typeof maybePromise.then === "function") {
-        maybePromise.then(resolve, reject);
-      }
     } catch (err) {
       reject(err);
     }
