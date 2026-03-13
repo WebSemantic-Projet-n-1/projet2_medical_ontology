@@ -5,6 +5,8 @@
 
 const LOG = (...args) => console.log("[GO-Evo CS]", ...args);
 
+const RUNTIME_API = (globalThis && (globalThis.browser || globalThis.chrome)) || undefined;
+
 const GO_ID_REGEX = /GO:\d{7}/;
 
 const STATUS_LABELS = {
@@ -211,7 +213,12 @@ function esc(str) {
 
   LOG(`Sending getTermDiff request for ${goId}`);
 
-  browser.runtime
+  if (!RUNTIME_API || !RUNTIME_API.runtime || typeof RUNTIME_API.runtime.sendMessage !== "function") {
+    LOG("Aborting — runtime messaging API is not available");
+    return;
+  }
+
+  RUNTIME_API.runtime
     .sendMessage({ action: "getTermDiff", goId })
     .then((response) => {
       LOG("Response from background:", JSON.stringify(response));
