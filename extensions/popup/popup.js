@@ -1,6 +1,11 @@
 /**
- * Popup Firefox — sauvegarde et chargement des options GO Evolution.
+ * Popup — sauvegarde et chargement des options GO Evolution.
+ * Compatible Firefox (browser.*) et Chrome MV3 (chrome.*).
  */
+
+// Cross-browser storage API: Firefox exposes `browser` (Promise-based);
+// Chrome MV3 exposes `chrome` (Promises supported since Chrome 88).
+const ext = globalThis.browser ?? globalThis.chrome;
 
 const DEFAULTS = {
   domain: "0006281",
@@ -15,14 +20,14 @@ document.addEventListener("DOMContentLoaded", async () => {
   const statsEl       = document.getElementById("stats");
   const apiBadgeEl    = document.getElementById("api-badge");
 
-  const stored = await browser.storage.local.get(Object.keys(DEFAULTS));
+  const stored = await ext.storage.local.get(Object.keys(DEFAULTS));
   domainEl.value = stored.domain  || DEFAULTS.domain;
   apiUrlEl.value = stored.apiUrl  || DEFAULTS.apiUrl;
 
   loadStats(stored.apiUrl || DEFAULTS.apiUrl, domainEl.value, statsEl, apiBadgeEl);
 
   saveBtn.addEventListener("click", async () => {
-    await browser.storage.local.set({
+    await ext.storage.local.set({
       domain: domainEl.value,
       apiUrl: apiUrlEl.value,
     });
@@ -30,9 +35,9 @@ document.addEventListener("DOMContentLoaded", async () => {
   });
 
   clearCacheBtn.addEventListener("click", async () => {
-    const all = await browser.storage.local.get(null);
+    const all = await ext.storage.local.get(null);
     const cacheKeys = Object.keys(all).filter(k => k.startsWith("cache_"));
-    if (cacheKeys.length) await browser.storage.local.remove(cacheKeys);
+    if (cacheKeys.length) await ext.storage.local.remove(cacheKeys);
     clearCacheBtn.textContent = "Cache vidé !";
     setTimeout(() => { clearCacheBtn.textContent = "Vider le cache"; }, 1500);
   });
