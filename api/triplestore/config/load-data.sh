@@ -12,7 +12,7 @@
 #   ADMIN_PASSWORD   – Mot de passe admin Fuseki    (défaut : admin)
 #   DATA_DIR         – Répertoire racine des données (défaut : /data)
 #   GRAPH_OLD_DIR    – Sous-répertoire version ancienne (défaut : gene-ontology-10-25/data/ontology)
-#   GRAPH_NEW_DIR    – Sous-répertoire version nouvelle (défaut : gene-ontology-11-26/data/ontology)
+#   GRAPH_NEW_DIR    – Sous-répertoire version nouvelle (défaut : gene-ontology-01-26/data/ontology)
 
 set -e
 
