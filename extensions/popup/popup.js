@@ -120,7 +120,7 @@ async function loadStats(apiUrl, domainId, statsEl, apiBadgeEl) {
 
   if (resp.ok) {
     const s = await resp.json();
-    statsEl.textContent = `${s.count_new || "?"} classes, ${s.new_classes || 0} nouvelles, ${s.deprecated || 0} dépréciées`;
+    statsEl.textContent = `${s.count_new ?? "?"} classes, ${s.new_classes ?? 0} nouvelles, ${s.deprecated ?? 0} dépréciées`;
     setApiBadge(apiBadgeEl, true);
   } else if (resp.status === 404) {
     // API is reachable but the stats endpoint or domain is not found
