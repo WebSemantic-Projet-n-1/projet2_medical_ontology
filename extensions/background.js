@@ -122,13 +122,13 @@ ext.runtime.onMessage.addListener((message, sender, sendResponse) => {
     const tabId = sender.tab?.id;
     LOG(`received getTermDiff for ${message.goId} (tab ${tabId})`);
 
-    if (tabId) setTabIcon(tabId, "yellow");
+    setTabIcon(tabId, "yellow");
 
     fetchTermDiff(message.goId, tabId)
       .then((data) => sendResponse(data))
       .catch((err) => {
         LOG(`error for ${message.goId}: ${err.message}`);
-        if (tabId) setTabIcon(tabId, "red");
+        setTabIcon(tabId, "red");
         sendResponse({ error: err.message });
       });
     return true;
