@@ -171,7 +171,8 @@ function buildDetailsPanel(d) {
   const showTree = (d.hierarchy_old || d.hierarchy_new) &&
     d.hierarchy_old !== d.hierarchy_new;
 
-  const safeStatusLabel = STATUS_LABELS[d.status] || d.status || "";
+  const normalizedStatus = normalizeStatus(d.status);
+  const safeStatusLabel = STATUS_LABELS[normalizedStatus] || "";
   const safeReleaseNotesUrl = normalizeReleaseNotesUrl(d.release_notes_url);
 
   panel.innerHTML = `
