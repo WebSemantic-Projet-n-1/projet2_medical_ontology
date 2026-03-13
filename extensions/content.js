@@ -72,17 +72,27 @@ function injectBadge(data) {
 
   LOG(`Injecting badge: status=${data.status}, go_id=${data.go_id}, label=${data.label}`);
 
-  const badge = document.createElement("div");
+  const badge = document.createElement("button");
+  badge.type = "button";
   badge.className = `go-evo-badge go-evo-${data.status}`;
   badge.textContent = STATUS_LABELS[data.status] || data.status;
   badge.title = `${data.go_id} — ${data.label}`;
-  document.body.appendChild(badge);
 
   const details = buildDetailsPanel(data);
+  const detailsId = `go-evo-details-${data.go_id}`;
+  if (!details.id) {
+    details.id = detailsId;
+  }
+  badge.setAttribute("aria-controls", details.id);
+  badge.setAttribute("aria-expanded", details.style.display === "none" ? "false" : "true");
+
+  document.body.appendChild(badge);
   document.body.appendChild(details);
 
   badge.addEventListener("click", () => {
-    details.style.display = details.style.display === "none" ? "flex" : "none";
+    const isHidden = details.style.display === "none";
+    details.style.display = isHidden ? "flex" : "none";
+    badge.setAttribute("aria-expanded", isHidden ? "true" : "false");
   });
 
   LOG("Badge and details panel injected successfully");
