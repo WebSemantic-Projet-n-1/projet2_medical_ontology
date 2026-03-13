@@ -6,9 +6,10 @@
   "permissions": [
     "storage",
     "activeTab",
-    "https://www.ebi.ac.uk/QuickGO/*",
-    "http://amigo.geneontology.org/*",
-    "https://www.ebi.ac.uk/ols/*",
+    "*://www.ebi.ac.uk/QuickGO/*",
+    "*://amigo.geneontology.org/*",
+    "*://www.ebi.ac.uk/ols/*",
+    "*://www.ebi.ac.uk/ols4/*",
     "http://localhost:8000/*"
   ],
   "background": {
@@ -17,9 +18,10 @@
   "content_scripts": [
     {
       "matches": [
-        "https://www.ebi.ac.uk/QuickGO/term/*",
-        "http://amigo.geneontology.org/amigo/term/*",
-        "https://www.ebi.ac.uk/ols/ontologies/go/terms/*"
+        "*://www.ebi.ac.uk/QuickGO/term/*",
+        "*://amigo.geneontology.org/amigo/term/*",
+        "*://www.ebi.ac.uk/ols/ontologies/go/terms/*",
+        "*://www.ebi.ac.uk/ols4/ontologies/go/classes/*"
       ],
       "js": ["content.js"],
       "css": ["content.css"],
@@ -27,6 +29,7 @@
     }
   ],
   "browser_action": {
+    "default_icon": "icons/icon-grey.svg",
     "default_popup": "popup/popup.html",
     "default_title": "GO Evolution - Options"
   }

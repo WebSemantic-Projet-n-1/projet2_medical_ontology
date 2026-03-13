@@ -1,1 +1,120 @@
-/* Même styles que extension-chrome/content.css pour badge et popup détail */
+/* ===== GO Evolution — Badge ===== */
+
+.go-evo-badge {
+  position: fixed;
+  top: 12px;
+  right: 12px;
+  z-index: 2147483647;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font: bold 13px/1.4 system-ui, sans-serif;
+  color: #fff;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  user-select: none;
+}
+
+.go-evo-badge:hover {
+  transform: scale(1.06);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
+}
+
+.go-evo-stable     { background: #4caf50; }
+.go-evo-modified   { background: #ff9800; }
+.go-evo-deprecated { background: #f44336; }
+.go-evo-new        { background: #2196f3; }
+
+/* ===== Details panel (overlay) ===== */
+
+.go-evo-details {
+  position: fixed;
+  top: 50px;
+  right: 12px;
+  z-index: 2147483646;
+  width: 580px;
+  max-height: 80vh;
+  overflow-y: auto;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.22);
+  font: 13px/1.5 system-ui, sans-serif;
+  color: #222;
+  flex-direction: column;
+}
+
+/* Header */
+.go-evo-details-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.go-evo-details-header h3 {
+  margin: 0;
+  font-size: 15px;
+}
+
+.go-evo-close {
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  color: #888;
+  line-height: 1;
+  padding: 0 4px;
+}
+
+.go-evo-close:hover {
+  color: #333;
+}
+
+/* Body — two-column comparison */
+.go-evo-details-body {
+  display: flex;
+  gap: 16px;
+  padding: 14px 16px;
+}
+
+.go-evo-col {
+  flex: 1;
+  min-width: 0;
+}
+
+.go-evo-col h4 {
+  margin: 0 0 4px;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  color: #666;
+}
+
+.go-evo-col p {
+  margin: 0 0 12px;
+  padding: 8px;
+  background: #f7f7f7;
+  border-radius: 6px;
+  word-break: break-word;
+}
+
+/* Footer */
+.go-evo-details-footer {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 10px 16px;
+  border-top: 1px solid #e0e0e0;
+  font-size: 12px;
+  color: #555;
+}
+
+.go-evo-details-footer a {
+  color: #1976d2;
+  text-decoration: none;
+}
+
+.go-evo-details-footer a:hover {
+  text-decoration: underline;
+}
