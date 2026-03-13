@@ -115,7 +115,7 @@ function buildDetailsPanel(d) {
   panel.innerHTML = `
     <div class="go-evo-details-header">
       <h3>${esc(d.go_id)} — ${esc(d.label)}</h3>
-      <button class="go-evo-close">&times;</button>
+      <button type="button" class="go-evo-close" aria-label="Fermer le panneau de détails">&times;</button>
     </div>
     <div class="go-evo-details-body">
       <div class="go-evo-col">
@@ -135,9 +135,16 @@ function buildDetailsPanel(d) {
     </div>
   `;
 
-  panel.querySelector(".go-evo-close").addEventListener("click", () => {
-    panel.style.display = "none";
-  });
+  const closeButton = panel.querySelector(".go-evo-close");
+  if (closeButton) {
+    closeButton.addEventListener("click", () => {
+      panel.style.display = "none";
+      const trigger = panel.previousElementSibling;
+      if (trigger && trigger.hasAttribute("aria-expanded")) {
+        trigger.setAttribute("aria-expanded", "false");
+      }
+    });
+  }
 
   return panel;
 }
