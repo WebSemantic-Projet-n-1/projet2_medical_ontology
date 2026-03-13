@@ -7,6 +7,39 @@ const LOG = (...args) => console.log("[GO-Evo CS]", ...args);
 
 const RUNTIME_API = (globalThis && (globalThis.browser || globalThis.chrome)) || undefined;
 
+/**
+ * Cross-browser wrapper for runtime.sendMessage.
+ * Supports both callback-based (Chrome) and Promise-based (Firefox / polyfilled) forms.
+ */
+function sendMessageCompat(message) {
+  return new Promise((resolve, reject) => {
+    if (!RUNTIME_API || !RUNTIME_API.runtime || typeof RUNTIME_API.runtime.sendMessage !== "function") {
+      reject(new Error("runtime messaging API is not available"));
+      return;
+    }
+
+    try {
+      const maybePromise = RUNTIME_API.runtime.sendMessage(message, (response) => {
+        // Handle Chrome-style callback with lastError
+        const runtime = RUNTIME_API && RUNTIME_API.runtime;
+        const lastError = runtime && runtime.lastError;
+        if (lastError) {
+          reject(new Error(lastError.message || String(lastError)));
+        } else {
+          resolve(response);
+        }
+      });
+
+      // If sendMessage returned a Promise/thenable (Firefox / polyfill), use it instead.
+      if (maybePromise && typeof maybePromise.then === "function") {
+        maybePromise.then(resolve, reject);
+      }
+    } catch (err) {
+      reject(err);
+    }
+  });
+}
+
 const GO_ID_REGEX = /GO:\d{7}/;
 
 const STATUS_LABELS = {
@@ -235,8 +268,7 @@ function esc(str) {
     return;
   }
 
-  RUNTIME_API.runtime
-    .sendMessage({ action: "getTermDiff", goId })
+  sendMessageCompat({ action: "getTermDiff", goId })
     .then((response) => {
       LOG("Response from background:", JSON.stringify(response));
 

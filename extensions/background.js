@@ -1,7 +1,8 @@
 /**
- * Background script Firefox (Manifest V2).
+ * Background/service worker script shared between Firefox (Manifest V2)
+ * and Chrome (Manifest V3 service worker).
  * Gère le cache local (browser.storage.local), les appels à l'API GO Evolution,
- * et l'icône dynamique par onglet.
+ * et l'icône dynamique par onglet. Doit rester compatible avec les contextes MV2 et MV3.
  */
 
 const LOG = (...args) => console.log("[GO-Evo BG]", ...args);
