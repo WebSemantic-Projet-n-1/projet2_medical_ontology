@@ -1,7 +1,8 @@
 /**
- * Background script — compatible Firefox MV2 (browser.*) and Chrome MV3 (chrome.*).
- * Gère le cache local (storage.local), les appels à l'API GO Evolution,
- * et l'icône dynamique par onglet.
+ * Background/service worker script shared between Firefox (Manifest V2)
+ * and Chrome (Manifest V3 service worker).
+ * Gère le cache local (browser.storage.local), les appels à l'API GO Evolution,
+ * et l'icône dynamique par onglet. Doit rester compatible avec les contextes MV2 et MV3.
  */
 
 // Cross-browser extension API wrapper
