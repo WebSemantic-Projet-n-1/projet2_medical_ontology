@@ -162,12 +162,7 @@ function renderTree(nodes, otherSet, firstDiffIdx, diffClass) {
         cls += " go-evo-tree-moved";
       }
       const indent = i * 18;
-      const connector = i > 0
-        ? `<span class="go-evo-tree-branch" style="width:${indent}px"></span>`
-        : "";
-      return `<div class="${cls}" style="padding-left:${indent + 6}px">
-        ${connector}${esc(node)}
-      </div>`;
+      return `<div class="${cls}" style="padding-left:${indent + 6}px">${esc(node)}</div>`;
     })
     .join("");
 }

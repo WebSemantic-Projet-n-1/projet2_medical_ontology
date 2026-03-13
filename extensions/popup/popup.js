@@ -21,6 +21,14 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   loadStats(stored.apiUrl || DEFAULTS.apiUrl, domainEl.value, statsEl, apiBadgeEl);
 
+  saveBtn.addEventListener("click", async () => {
+    await browser.storage.local.set({
+      domain: domainEl.value,
+      apiUrl: apiUrlEl.value,
+    });
+    loadStats(apiUrlEl.value, domainEl.value, statsEl, apiBadgeEl);
+  });
+
   clearCacheBtn.addEventListener("click", async () => {
     const all = await browser.storage.local.get(null);
     const cacheKeys = Object.keys(all).filter(k => k.startsWith("cache_"));
