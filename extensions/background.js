@@ -16,13 +16,23 @@ const ICON_PATHS = {
   orange: "icons/icon-orange.svg",
 };
 
+// Abstraction for toolbar/action API across Firefox MV2/MV3 and Chrome MV3
+const toolbarAction =
+  (typeof browser !== "undefined" && (browser.action || browser.browserAction)) ||
+  (typeof chrome !== "undefined" && (chrome.action || chrome.browserAction)) ||
+  null;
+
 function setTabIcon(tabId, state) {
   if (typeof tabId !== "number") {
     LOG(`icon → ${state} (no valid tabId, skipping setIcon)`);
     return;
   }
+  if (!toolbarAction || typeof toolbarAction.setIcon !== "function") {
+    LOG(`icon → ${state} (no toolbar action API available, skipping setIcon)`);
+    return;
+  }
   LOG(`icon → ${state} (tab ${tabId})`);
-  browser.browserAction.setIcon({ tabId, path: ICON_PATHS[state] });
+  toolbarAction.setIcon({ tabId, path: ICON_PATHS[state] });
 }
 
 // ---------------------------------------------------------------------------
