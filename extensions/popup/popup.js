@@ -110,15 +110,8 @@ async function loadStats(apiUrl, domainId, statsEl, apiBadgeEl) {
   setApiBadge(apiBadgeEl, null);
   let resp;
   try {
-    resp = await fetch(`${apiUrl}/api/domain/${domainId}/stats`);
-  } catch {
-    // Network error — API truly unreachable
-    statsEl.textContent = "Indisponible";
-    setApiBadge(apiBadgeEl, false);
-    return;
-  }
-
-  if (resp.ok) {
+    const resp = await fetch(`${apiUrl}/api/domain/${encodeURIComponent(domainId)}/stats`);
+    if (!resp.ok) throw new Error(resp.status);
     const s = await resp.json();
     statsEl.textContent = `${s.count_new ?? "?"} classes, ${s.new_classes ?? 0} nouvelles, ${s.deprecated ?? 0} dépréciées`;
     setApiBadge(apiBadgeEl, true);
