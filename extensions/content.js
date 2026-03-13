@@ -53,6 +53,17 @@ const STATUS_LABELS = {
 };
 
 /**
+ * Normalize status coming from the background/API to a known, safe value.
+ * Falls back to "stable" if the value is missing or unrecognized.
+ */
+function normalizeStatus(status) {
+  if (typeof status === "string" && Object.prototype.hasOwnProperty.call(STATUS_LABELS, status)) {
+    return status;
+  }
+  return "stable";
+}
+
+/**
  * Validate and normalize a URL for use in href attributes.
  * Only http and https schemes are allowed; otherwise returns null.
  */
@@ -119,12 +130,13 @@ function injectBadge(data) {
     return;
   }
 
-  LOG(`Injecting badge: status=${data.status}, go_id=${data.go_id}, label=${data.label}`);
+  const safeStatus = normalizeStatus(data.status);
+  LOG(`Injecting badge: status=${safeStatus}, go_id=${data.go_id}, label=${data.label}`);
 
   const badge = document.createElement("button");
   badge.type = "button";
-  badge.className = `go-evo-badge go-evo-${data.status}`;
-  badge.textContent = STATUS_LABELS[data.status] || data.status;
+  badge.className = `go-evo-badge go-evo-${safeStatus}`;
+  badge.textContent = STATUS_LABELS[safeStatus];
   badge.title = `${data.go_id} — ${data.label}`;
 
   const details = buildDetailsPanel(data);
