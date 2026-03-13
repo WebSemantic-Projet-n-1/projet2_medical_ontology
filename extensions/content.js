@@ -171,6 +171,7 @@ function buildDetailsPanel(d) {
   const showTree = (d.hierarchy_old || d.hierarchy_new) &&
     d.hierarchy_old !== d.hierarchy_new;
 
+  const safeStatusLabel = STATUS_LABELS[d.status] || d.status || "";
   const safeReleaseNotesUrl = normalizeReleaseNotesUrl(d.release_notes_url);
 
   panel.innerHTML = `
@@ -190,7 +191,7 @@ function buildDetailsPanel(d) {
     </div>
     ${showTree ? buildTreeComparison(d.hierarchy_old, d.hierarchy_new) : ""}
     <div class="go-evo-details-footer">
-      <span>Statut : <strong>${esc(STATUS_LABELS[d.status] || d.status)}</strong></span>
+      <span>Statut : <strong>${esc(safeStatusLabel)}</strong></span>
       ${d.change_date ? `<span>Date : ${esc(d.change_date)}</span>` : ""}
       ${safeReleaseNotesUrl ? `<a href="${esc(safeReleaseNotesUrl)}" target="_blank" rel="noopener">Release notes</a>` : ""}
     </div>
