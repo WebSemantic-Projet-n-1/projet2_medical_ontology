@@ -5,6 +5,9 @@
  * et l'icône dynamique par onglet. Doit rester compatible avec les contextes MV2 et MV3.
  */
 
+// Cross-browser extension API wrapper
+const ext = globalThis.browser ?? globalThis.chrome;
+
 const LOG = (...args) => console.log("[GO-Evo BG]", ...args);
 
 const CACHE_TTL_MS = 24 * 60 * 60 * 1000; // 24 h
@@ -18,10 +21,7 @@ const ICON_PATHS = {
 };
 
 // Abstraction for toolbar/action API across Firefox MV2/MV3 and Chrome MV3
-const toolbarAction =
-  (typeof browser !== "undefined" && (browser.action || browser.browserAction)) ||
-  (typeof chrome !== "undefined" && (chrome.action || chrome.browserAction)) ||
-  null;
+const toolbarAction = (ext && (ext.action || ext.browserAction)) || null;
 
 function setTabIcon(tabId, state) {
   if (typeof tabId !== "number") {
@@ -42,7 +42,7 @@ function setTabIcon(tabId, state) {
 
 async function getCached(goId) {
   const key = `cache_${goId}`;
-  const result = await browser.storage.local.get(key);
+  const result = await ext.storage.local.get(key);
   const entry = result[key];
   if (entry && Date.now() - entry.timestamp < CACHE_TTL_MS) {
     LOG(`cache HIT for ${goId}`);
@@ -54,7 +54,7 @@ async function getCached(goId) {
 
 async function setCached(goId, data) {
   const key = `cache_${goId}`;
-  await browser.storage.local.set({ [key]: { data, timestamp: Date.now() } });
+  await ext.storage.local.set({ [key]: { data, timestamp: Date.now() } });
   LOG(`cache SET for ${goId}`);
 }
 
@@ -63,7 +63,7 @@ async function setCached(goId, data) {
 // ---------------------------------------------------------------------------
 
 async function fetchTermDiff(goId, tabId) {
-  const settings = await browser.storage.local.get(["apiUrl"]);
+  const settings = await ext.storage.local.get(["apiUrl"]);
   const apiUrl = settings.apiUrl || "http://localhost:8000";
 
   const cached = await getCached(goId);
@@ -101,7 +101,7 @@ async function fetchTermDiff(goId, tabId) {
 // Message listener
 // ---------------------------------------------------------------------------
 
-browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
+ext.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message.action === "getTermDiff" && message.goId) {
     const tabId = sender.tab?.id;
     LOG(`received getTermDiff for ${message.goId} (tab ${tabId})`);
