@@ -62,16 +62,13 @@ async function setCached(goId, data) {
 // ---------------------------------------------------------------------------
 
 async function fetchTermDiff(goId, tabId) {
-  const settings = await browser.storage.local.get(["apiUrl", "cacheEnabled"]);
+  const settings = await browser.storage.local.get(["apiUrl"]);
   const apiUrl = settings.apiUrl || "http://localhost:8000";
-  const cacheEnabled = settings.cacheEnabled !== false;
 
-  if (cacheEnabled) {
-    const cached = await getCached(goId);
-    if (cached) {
-      setTabIcon(tabId, "green");
-      return cached;
-    }
+  const cached = await getCached(goId);
+  if (cached) {
+    setTabIcon(tabId, "green");
+    return cached;
   }
 
   setTabIcon(tabId, "yellow");
@@ -93,7 +90,7 @@ async function fetchTermDiff(goId, tabId) {
   }
 
   const data = await resp.json();
-  if (cacheEnabled) await setCached(goId, data);
+  await setCached(goId, data);
 
   setTabIcon(tabId, "green");
   return data;
