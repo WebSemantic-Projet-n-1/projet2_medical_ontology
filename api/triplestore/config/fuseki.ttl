@@ -1,0 +1,33 @@
+# Configuration Apache Jena Fuseki — dataset TDB2 persistant
+# Dataset name : ds
+# Endpoint SPARQL : http://localhost:3030/ds/query
+# Graph Store    : http://localhost:3030/ds/data
+
+PREFIX fuseki:  <http://jena.apache.org/fuseki#>
+PREFIX rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs:    <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX tdb2:    <http://jena.apache.org/2016/tdb#>
+PREFIX ja:      <http://jena.hpl.hp.com/2005/11/Assembler#>
+
+<#service_go> rdf:type fuseki:Service ;
+    fuseki:name "ds" ;
+
+    # Lecture SPARQL (GET + POST)
+    fuseki:endpoint [ fuseki:operation fuseki:query  ; fuseki:name "sparql" ] ;
+    fuseki:endpoint [ fuseki:operation fuseki:query  ; fuseki:name "query"  ] ;
+
+    # Écriture SPARQL Update
+    fuseki:endpoint [ fuseki:operation fuseki:update ; fuseki:name "update" ] ;
+
+    # Upload de fichiers RDF
+    fuseki:endpoint [ fuseki:operation fuseki:upload ; fuseki:name "upload" ] ;
+
+    # Graph Store Protocol (lecture seule + lecture/écriture)
+    fuseki:endpoint [ fuseki:operation fuseki:gsp-r  ; fuseki:name "get"  ] ;
+    fuseki:endpoint [ fuseki:operation fuseki:gsp-rw ; fuseki:name "data" ] ;
+
+    fuseki:dataset <#dataset_go> .
+
+<#dataset_go> rdf:type tdb2:DatasetTDB2 ;
+    # Répertoire de stockage TDB2 dans le volume Docker
+    tdb2:location "/fuseki/databases/ontologies" .
