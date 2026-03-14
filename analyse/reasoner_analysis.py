@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Partie 1 - Script 4 : Utilisation d'un raisonneur OWL (HermiT, Pellet).
+Partie 1 - Script 4 : Utilisation d'un raisonneur OWL (HermiT).
 
-Lance HermiT puis Pellet sur les deux versions de Gene Ontology
+Lance HermiT sur les deux versions de Gene Ontology
 (octobre 2025 et janvier 2026), domaine DNA repair (GO:0006281).
 
 Sorties
@@ -18,7 +18,6 @@ Prérequis
 - Si Java n'est pas trouvé, configurer son chemin dans reasoner_config.ini
   (même dossier que ce script).
 - HermiT : Java 11+
-- Pellet : Java 25+ (JAR Jena bundlé dans owlready2 compilé pour Java 25)
 """
 
 import configparser
@@ -52,7 +51,7 @@ RESULTS_DIR = SCRIPT_DIR / "result" / "reasoner"
 DOMAIN_ROOT_ID = "GO:0006281"
 DOMAIN_LABEL = "DNA repair"
 
-REASONERS = ["HermiT", "Pellet"]
+REASONERS = ["HermiT"]
 
 # ---------------------------------------------------------------------------
 # Vérification et configuration de Java
@@ -85,7 +84,7 @@ def get_java_version(java_exe: str) -> Tuple[int, str]:
 
 
 def get_java_malloc() -> Optional[int]:
-    """Définit la taille de la mémoire JVM reasoner_config.ini si défini."""
+    """Retourne la taille de heap JVM définie dans reasoner_config.ini, ou None."""
     if not CONFIG_PATH.exists():
         return None
     cfg = configparser.ConfigParser()
@@ -102,54 +101,22 @@ def get_java_malloc() -> Optional[int]:
 
 
 def setup_java() -> bool:
-    """Configure owlready2.JAVA_EXE. Vérifie la version Java."""
+    """Configure owlready2.JAVA_EXE et le heap JVM."""
     java = shutil.which("java")
     if not java:
-        print("=" * 64)
         print("  ERREUR : Java introuvable sur ce système.")
-        print()
-        print("  HermiT et Pellet sont des raisonneurs écrits en Java.")
-        print("  Solutions :")
-        print("    1. Installez Java (JRE/JDK >= 11) et ajoutez-le au PATH.")
-        print(f"    2. Ou renseignez son chemin dans : {CONFIG_PATH}")
-        print()
-        print("  Exemple de contenu pour reasoner_config.ini (Windows) :")
-        print("    [java]")
-        print("    exe = C:\\Program Files\\Java\\jdk-21\\bin\\java.exe")
-        print()
-        print("  Exemple (Linux) :")
-        print("    [java]")
-        print("    exe = /usr/lib/jvm/java-21-openjdk-amd64/bin/java")
-        print("=" * 64)
         return False
 
     owlready2.JAVA_EXE = java
-    major, version_str = get_java_version(java)
-    print(f"[INFO] Java detecte : {java}")
-    print(f"[INFO] Version Java  : {version_str}  (majeure={major})")
+    version_str = get_java_version(java)
+    print(f"[INFO] Java path     : {java}")
+    print(f"[INFO] Version Java  : {version_str}")
 
     mem_mb = get_java_malloc()
     if mem_mb is not None:
-        try:
-            owlready2.reasoning.JAVA_MEMORY = mem_mb
-            print(f"[INFO] Heap Java (owlready2) : -Xmx{mem_mb}M")
-        except Exception as exc:
-            print(f"[WARN] Impossible de configurer owlready2.reasoning.JAVA_MEMORY: {exc}")
-
-    if 0 < major < 25:
-        print()
-        print("  +-- AVERTISSEMENT -- Compatibilite Pellet ----------------")
-        print(f"  |  Java {major} detecte, mais le JAR Pellet bundle dans")
-        print("  |  owlready2 requiert Java 25+ (class file version 69.0).")
-        print("  |")
-        print("  |  -> HermiT fonctionnera normalement.")
-        print("  |  -> Pellet echouera avec UnsupportedClassVersionError.")
-        print("  |")
-        print("  |  Pour utiliser Pellet, installez Java 25 (ou +) :")
-        print("  |    Windows : https://adoptium.net/ (Temurin 25)")
-        print("  |    Ubuntu  : sudo apt install openjdk-25-jre-headless")
-        print("  +----------------------------------------------------------")
-        print()
+        import owlready2.reasoning as _r
+        _r.JAVA_MEMORY = mem_mb
+        print(f"[INFO] Heap Java     : -Xmx{mem_mb}M")
 
     return True
 
@@ -191,7 +158,13 @@ def get_descendants(onto, root_go_id: str) -> set:
 # ---------------------------------------------------------------------------
 
 
-def run_reasoner(onto, reasoner_name: str, world: World, dna_repair_iris: set) -> Dict[str, Any]:
+def run_reasoner(
+    onto,
+    reasoner_name: str,
+    world: World,
+    dna_repair_iris: set,
+    memory_mb: Optional[int] = None,
+) -> Dict[str, Any]:
     """Lance un raisonneur sur l'ontologie et retourne les résultats."""
     result: Dict[str, Any] = {
         "reasoner": reasoner_name,
@@ -202,18 +175,16 @@ def run_reasoner(onto, reasoner_name: str, world: World, dna_repair_iris: set) -
         "error": None,
     }
 
+    import owlready2.reasoning as _r
+    if memory_mb is not None:
+        _r.JAVA_MEMORY = memory_mb
+
     start = time.perf_counter()
     try:
         if reasoner_name == "HermiT":
             owlready2.sync_reasoner(
                 [onto],
                 infer_property_values=False,
-            )
-        elif reasoner_name == "Pellet":
-            owlready2.sync_reasoner_pellet(
-                [onto],
-                infer_property_values=False,
-                infer_data_property_values=False,
             )
         else:
             raise ValueError(f"Raisonneur inconnu : {reasoner_name}")
@@ -249,7 +220,7 @@ def run_reasoner(onto, reasoner_name: str, world: World, dna_repair_iris: set) -
 
 
 def analyse_version(label: str, owl_path: Path) -> Dict[str, Any]:
-    """Charge l'ontologie puis lance HermiT et Pellet sur celle-ci."""
+    """Charge l'ontologie puis lance HermiT sur celle-ci."""
     print(f"\n{'=' * 64}")
     print(f"  Version : {label}")
     print(f"  Fichier : {owl_path}")
@@ -264,23 +235,20 @@ def analyse_version(label: str, owl_path: Path) -> Dict[str, Any]:
     dna_repair_iris = get_descendants(onto, DOMAIN_ROOT_ID)
     print(f"  Classes DNA repair: {len(dna_repair_iris):,}")
 
+    mem_mb = get_java_malloc()
+
     reasoner_results: List[Dict] = []
     for rname in REASONERS:
         print(f"\n  -> Lancement du raisonneur {rname}...")
 
-        r = run_reasoner(onto, rname, world, dna_repair_iris)
+        r = run_reasoner(onto, rname, world, dna_repair_iris, memory_mb=mem_mb)
 
-        elapsed = r["elapsed_seconds"]
-        consistent = r["ontology_consistent"]
-        nb_inc = len(r["inconsistent_classes_total"])
-        nb_inc_dna = len(r["inconsistent_classes_dna_repair"])
-
-        print(f"    Temps              : {elapsed} s")
-        print(f"    Ontologie coherente: {consistent}")
+        print(f"    Temps              : {r['elapsed_seconds']} s")
+        print(f"    Ontologie coherente: {r['ontology_consistent']}")
         if r["error"]:
             print(f"    Erreur             : {r['error'][:200]}")
-        print(f"    Inc. totales       : {nb_inc}")
-        print(f"    Inc. DNA repair    : {nb_inc_dna}")
+        print(f"    Inc. totales       : {len(r['inconsistent_classes_total'])}")
+        print(f"    Inc. DNA repair    : {len(r['inconsistent_classes_dna_repair'])}")
 
         reasoner_results.append(r)
 
@@ -291,77 +259,6 @@ def analyse_version(label: str, owl_path: Path) -> Dict[str, Any]:
         "nb_classes_dna_repair": len(dna_repair_iris),
         "reasoners": reasoner_results,
     }
-
-
-# ---------------------------------------------------------------------------
-# Export des résultats
-# ---------------------------------------------------------------------------
-
-
-def export_json(data: Dict, path: Path) -> None:
-    path.parent.mkdir(parents=True, exist_ok=True)
-    with open(path, "w", encoding="utf-8") as f:
-        json.dump(data, f, indent=2, ensure_ascii=False)
-    print(f"\n[OK] JSON exporte : {path}")
-
-
-def export_markdown(data: Dict, path: Path) -> None:
-    lines: List[str] = []
-    lines.append("# Analyse des raisonneurs OWL - Gene Ontology\n\n")
-    lines.append(f"**Domaine :** {DOMAIN_LABEL} (`{DOMAIN_ROOT_ID}`)  \n")
-    lines.append(f"**Raisonneurs :** {', '.join(REASONERS)}  \n\n")
-    lines.append("---\n\n")
-
-    for version in data["versions"]:
-        lines.append(f"## Version : {version['label']}\n\n")
-        lines.append(f"- Fichier OWL : `{Path(version['owl_path']).name}`\n")
-        lines.append(f"- Classes totales : {version['nb_classes_total']:,}\n")
-        lines.append(f"- Classes DNA repair : {version['nb_classes_dna_repair']:,}\n\n")
-
-        lines.append(
-            "| Raisonneur | Temps (s) | Coherente | Inc. totales | Inc. DNA repair |\n"
-        )
-        lines.append("|---|---|---|---|---|\n")
-        for r in version["reasoners"]:
-            if r["ontology_consistent"] is True:
-                sym = "oui"
-            elif r["ontology_consistent"] is False:
-                sym = "non"
-            else:
-                sym = "N/A"
-
-            err_note = ""
-            if r["error"]:
-                snippet = r["error"][:60] + ("..." if len(r["error"]) > 60 else "")
-                err_note = f" (erreur: `{snippet}`)"
-
-            lines.append(
-                f"| {r['reasoner']} "
-                f"| {r['elapsed_seconds']} "
-                f"| {sym}{err_note} "
-                f"| {len(r['inconsistent_classes_total'])} "
-                f"| {len(r['inconsistent_classes_dna_repair'])} |\n"
-            )
-
-        for r in version["reasoners"]:
-            if r["inconsistent_classes_dna_repair"]:
-                lines.append(
-                    f"\n### Classes incoherentes - {r['reasoner']} - DNA repair\n\n"
-                )
-                for iri in sorted(r["inconsistent_classes_dna_repair"]):
-                    go_id = iri.split("/")[-1].replace("_", ":")
-                    lines.append(f"- `{go_id}` - {iri}\n")
-                lines.append("\n")
-
-        lines.append("\n")
-
-    lines.append("---\n\n")
-    lines.append("*Rapport genere automatiquement par `reasoner_analysis.py`.*\n")
-
-    path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text("".join(lines), encoding="utf-8")
-    print(f"[OK] Markdown exporte : {path}")
-
 
 # ---------------------------------------------------------------------------
 # Point d'entrée
@@ -394,9 +291,6 @@ def main() -> None:
     if not all_results["versions"]:
         print("\n[ERREUR] Aucune ontologie chargee. Verifiez le dossier data/.")
         sys.exit(1)
-
-    export_json(all_results, RESULTS_DIR / "reasoner_report.json")
-    export_markdown(all_results, RESULTS_DIR / "reasoner_report.md")
 
     print("\n" + "=" * 64)
     print("  Resume comparatif")

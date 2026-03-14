@@ -290,20 +290,5 @@ def main() -> None:
     report = format_report(comparisons)
     print(report)
 
-    RESULTS_DIR.mkdir(parents=True, exist_ok=True)
-
-    md_path = RESULTS_DIR / "qualitative_report.md"
-    md_path.write_text(report, encoding="utf-8")
-    print(f"Rapport Markdown exporte vers {md_path}")
-
-    # Export JSON (données brutes, utile pour le rapport)
-    json_path = RESULTS_DIR / "qualitative_report.json"
-    json_path.write_text(
-        json.dumps(comparisons, ensure_ascii=False, indent=2),
-        encoding="utf-8",
-    )
-    print(f"Donnees JSON exportees vers {json_path}")
-
-
 if __name__ == "__main__":
     main()
