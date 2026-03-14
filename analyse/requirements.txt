@@ -1,0 +1,6 @@
+# Dependencies for analyse scripts:
+#   load_ontologies.py, qualitative_analysis.py, quantitative_analysis.py, reasoner_analysis.py
+# Python 3.10+
+
+owlready2>=0.47
+pandas>=2.0.0

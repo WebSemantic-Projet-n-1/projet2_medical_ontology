@@ -74,6 +74,19 @@ def get_stats(onto, label: str, source_path: Path) -> Dict[str, Any]:
     num_axioms = len(list(onto.axioms()))
   except Exception:
     num_axioms = None
+  if num_axioms is None:
+    try:
+      w = onto.world
+      rdfs = "http://www.w3.org/2000/01/rdf-schema#"
+      owl_ns = "http://www.w3.org/2002/07/owl#"
+      total = 0
+      for pred in (f"<{rdfs}subClassOf>", f"<{owl_ns}equivalentClass>", f"<{owl_ns}disjointWith>"):
+        rows = list(w.sparql(f"SELECT (COUNT(*) AS ?n) {{ ?s {pred} ?o . }}"))
+        if rows and rows[0]:
+          total += int(rows[0][0])
+      num_axioms = total if total else None  # SubClassOf + EquivalentClasses + DisjointWith (≈ Protégé Logical)
+    except Exception:
+      pass
 
   try:
     num_individuals = len(list(onto.individuals()))

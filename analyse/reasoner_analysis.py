@@ -58,16 +58,6 @@ REASONERS = ["HermiT", "Pellet"]
 # Vérification et configuration de Java
 # ---------------------------------------------------------------------------
 
-
-def find_java() -> Optional[str]:
-    """Cherche java dans le PATH système, puis dans reasoner_config.ini."""
-    java = shutil.which("java")
-    if java:
-        return java
-
-    return None
-
-
 def get_java_version(java_exe: str) -> Tuple[int, str]:
     """Retourne (version_majeure, chaîne_version_complète).
 
@@ -113,7 +103,7 @@ def get_java_malloc() -> Optional[int]:
 
 def setup_java() -> bool:
     """Configure owlready2.JAVA_EXE. Vérifie la version Java."""
-    java = find_java()
+    java = shutil.which("java")
     if not java:
         print("=" * 64)
         print("  ERREUR : Java introuvable sur ce système.")

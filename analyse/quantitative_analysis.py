@@ -40,27 +40,23 @@ def go_id_to_iri(go_id: str) -> str:
 
 
 def get_descendants(onto, root_go_id: str) -> Set[str]:
-    """Retourne les IRI de toutes les classes descendantes de root_go_id
-    (racine incluse) par parcours BFS sur subclasses().
+    """Retourne les IRI (str) de toutes les classes descendantes de root_go_id
+    (racine incluse) via SPARQL 1.1 sur le world owlready2.
+
+    Compte uniquement la hiérarchie is_a (rdfs:subClassOf), pas part_of/regulates.
     """
     root_iri = go_id_to_iri(root_go_id)
-    root_cls = onto.search_one(iri=root_iri)
-    if root_cls is None:
-        print(f"  [WARN] Classe racine {root_go_id} introuvable dans l'ontologie.")
+    try:
+        q = (
+            "SELECT DISTINCT ?sub WHERE { "
+            "?sub rdfs:subClassOf* <%s> . "
+            "FILTER(ISIRI(?sub)) }"
+        ) % root_iri
+        rows = list(onto.world.sparql(q))
+        return {str(row[0]) for row in rows}
+    except Exception as e:
+        print(f"  [WARN] SPARQL descendants échoué pour {root_go_id}: {e}")
         return set()
-
-    visited: Set[str] = set()
-    stack = [root_cls]
-    while stack:
-        # FILO
-        cls = stack.pop()
-        if cls.iri in visited:
-            continue
-        visited.add(cls.iri)
-        for sub in cls.subclasses():
-            if sub.iri not in visited:
-                stack.append(sub)
-    return visited
 
 
 def count_deprecated(onto, class_iris: Set[str]) -> int:
@@ -118,14 +114,14 @@ def main() -> None:
     print(f"  Ancienne version (oct. 2025) : {PATH_GO_OLD}")
     print(f"  Nouvelle version (jan. 2026) : {PATH_GO_NEW}\n")
 
-    print("Chargement de l'ontologie GO oct. 2025 …")
+    print("Chargement de l'ontologie GO oct. 2025 (owlready2) …")
     onto_old = load_ontology(PATH_GO_OLD)
 
-    print("Chargement de l'ontologie GO jan. 2026 …")
+    print("Chargement de l'ontologie GO jan. 2026 (owlready2) …")
     onto_new = load_ontology(PATH_GO_NEW)
 
     # ------------------------------------------------------------------
-    # 1. Ensembles de descendants dans chaque version
+    # 1. Ensembles de descendants dans chaque version (hiérarchie is_a)
     # ------------------------------------------------------------------
     print(f"\nExtraction des descendants de {DOMAIN_ROOT_ID} …")
     iris_old = get_descendants(onto_old, DOMAIN_ROOT_ID)
