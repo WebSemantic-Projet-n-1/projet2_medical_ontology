@@ -15,17 +15,9 @@ STRUCTURE DU SCRIPT
 4. Sortie : tableaux / CSV pour le rapport.
 """
 
-import sys
-from pathlib import Path
 from typing import Dict, Set
-
 import pandas as pd
-
-sys.path.insert(0, str(Path(__file__).resolve().parent))
 from load_ontologies import GO_NS, PATH_GO_NEW, PATH_GO_OLD, load_ontology
-
-# Dossier de résultats : result/analyse
-RESULTS_DIR = Path(__file__).resolve().parent / "result" / "quantitative"
 
 # ---------------------------------------------------------------------------
 # Domaine choisi : Réparation de l'ADN (DNA repair)
@@ -159,11 +151,6 @@ def main() -> None:
 
     print(f"\nResultats - domaine {DOMAIN_ROOT_ID} ({DOMAIN_LABEL}) :")
     print(df.to_string())
-
-    RESULTS_DIR.mkdir(parents=True, exist_ok=True)
-    out_path = RESULTS_DIR / "quantitative_stats.csv"
-    df.to_csv(out_path, index=True)
-    print(f"\nResultats exportes vers {out_path}")
 
 
 if __name__ == "__main__":

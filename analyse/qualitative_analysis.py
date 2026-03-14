@@ -13,17 +13,9 @@ STRUCTURE DU SCRIPT
 3. Sortie : rapport Markdown + JSON structuré pour le rapport.
 """
 
-import json
-import sys
-from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple
-
-sys.path.insert(0, str(Path(__file__).resolve().parent))
+from typing import Any, Dict, List, Optional
 from load_ontologies import GO_NS, PATH_GO_NEW, PATH_GO_OLD, load_ontology
 from owlready2 import Restriction
-
-# Dossier de résultats : result/analyse
-RESULTS_DIR = Path(__file__).resolve().parent / "result" / "qualitative"
 
 # ---------------------------------------------------------------------------
 # 5 termes du domaine DNA repair (GO:0006281) et ses sous-processus majeurs
