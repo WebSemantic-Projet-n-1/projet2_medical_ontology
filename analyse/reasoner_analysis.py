@@ -6,17 +6,9 @@ Partie 1 - Script 4 : Utilisation d'un raisonneur OWL (HermiT).
 Lance HermiT sur les deux versions de Gene Ontology
 (octobre 2025 et janvier 2026), domaine DNA repair (GO:0006281).
 
-Sorties
--------
-- Console : tableau comparatif (temps, incohérences).
-- result/reasoner/reasoner_report.json  : données brutes.
-- result/reasoner/reasoner_report.md    : rapport lisible.
-
 Prérequis
 ---------
 - Java installé et accessible (détection automatique via PATH).
-- Si Java n'est pas trouvé, configurer son chemin dans reasoner_config.ini
-  (même dossier que ce script).
 - HermiT : Java 11+
 """
 

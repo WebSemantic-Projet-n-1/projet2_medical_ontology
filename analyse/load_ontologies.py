@@ -28,9 +28,6 @@ utiliser : from util.device import get_device ; device = get_device().
 Priorité CUDA, repli CPU automatique si indisponible.
 """
 
-
-import json
-from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict
 
@@ -108,31 +105,6 @@ def get_stats(onto, label: str, source_path: Path) -> Dict[str, Any]:
   }
 
 
-def export_json(stats_old: Dict, stats_new: Dict, out_path: Path) -> None:
-  """Sérialise les stats des deux ontologies dans un fichier JSON."""
-  payload = {
-      "generated_at": datetime.now().isoformat(timespec="seconds"),
-      "description": "Exploration comparative des deux versions de l'ontologie Gene Ontology (GO)",
-      "ontologies": {
-          "GO_10-25": stats_old,
-          "GO_01-26": stats_new,
-      },
-      "delta": {
-          "nb_classes": stats_new["nb_classes"] - stats_old["nb_classes"],
-          "nb_proprietes": (
-              stats_new["proprietes"]["total"] - stats_old["proprietes"]["total"]
-          ),
-          "nb_axiomes": (
-              (stats_new["nb_axiomes"] - stats_old["nb_axiomes"])
-              if stats_old["nb_axiomes"] is not None and stats_new["nb_axiomes"] is not None
-              else None
-          ),
-      },
-  }
-  with out_path.open("w", encoding="utf-8") as fh:
-    json.dump(payload, fh, ensure_ascii=False, indent=2)
-
-
 def main() -> None:
   """Charge les deux versions de GO, affiche et exporte les statistiques."""
   print(f"Ancienne ontologie (octobre 2025) : {PATH_GO_OLD}")
@@ -154,19 +126,6 @@ def main() -> None:
   df = pd.DataFrame(rows, index=["GO_10-25", "GO_01-26"])
   print("\nRésumé des ontologies GO :")
   print(df.to_string())
-
-  RESULTS_DIR.mkdir(parents=True, exist_ok=True)
-
-  # Export CSV
-  csv_path = RESULTS_DIR / "go_stats.csv"
-  df.to_csv(csv_path, index=True)
-  print(f"\nCSV  exporté  → {csv_path}")
-
-  # Export JSON
-  json_path = RESULTS_DIR / "go_stats.json"
-  export_json(stats_old, stats_new, json_path)
-  print(f"JSON exporté  → {json_path}")
-
 
 if __name__ == "__main__":
   main()

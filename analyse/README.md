@@ -29,7 +29,7 @@ python analyse/quantitative_analysis.py
 python analyse/qualitative_analysis.py
 ```
 
-### Raisonneur HermiT / Pellet — via Docker (méthode recommandée)
+### Raisonneur HermiT — via Docker (méthode recommandée)
 
 Depuis le dossier `analyse/` :
 
@@ -39,16 +39,9 @@ cd analyse
 # Premier lancement : build de l'image (~2 min)
 docker compose build reasoner
 
-# Lancer l'analyse (HermiT + Pellet sur les deux versions GO)
+# Lancer l'analyse (HermiT sur les deux versions GO)
 docker compose run --rm reasoner
 ```
 
-L'image embarque Java 25 et lance la JVM avec **`-Xmx12000M`** (12 Go de heap).
-Le conteneur est limité à **12 Go de RAM** (`mem_limit: 12g` dans `docker-compose.yml`).
-
-> **Docker Desktop** : vérifiez que le moteur Docker dispose d'au moins 14 Go de RAM
-> (Settings → Resources → Memory) pour absorber le heap + l'overhead JVM/OS.
-
-Les rapports sont écrits dans `analyse/result/reasoner/` sur la machine hôte.
-
-Prend environ 2 minutes pour HermiT sur oct-25.
+L'image embarque Java 25 et lance la JVM avec **`-Xmx4000M`** (4 Go de heap).
+Prend environ 2 minutes par dataset.
