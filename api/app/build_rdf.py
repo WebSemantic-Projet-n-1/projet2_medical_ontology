@@ -59,8 +59,8 @@ OBO_NS   = Namespace("http://purl.obolibrary.org/obo/")
 GRAPH_OLD = URIRef("http://example.org/go/version/2025-10")
 GRAPH_NEW = URIRef("http://example.org/go/version/2026-01")
 
-# Endpoint Fuseki (à adapter selon votre installation)
-FUSEKI_ENDPOINT = "http://localhost:3030/go_evolution"
+# Endpoint Fuseki
+FUSEKI_ENDPOINT = "http://localhost:3030/ds"
 
 # Dates de publication
 VERSION_DATE_OLD = "2025-10-01"
