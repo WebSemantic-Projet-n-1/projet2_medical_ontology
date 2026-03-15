@@ -15,7 +15,7 @@ Avoir complété la section "Installation des données GO (setup)" du README, av
 
 ## Exécution
 
-> Le raisonneur HermiT sur GO (~52k classes) requiert Java 25 et 12 Go de heap Java.
+> HermiT/Pellet sur GO (~52k classes) requiert Java 11+
 
 ### Scripts non-raisonneur (depuis la racine du projet)
 

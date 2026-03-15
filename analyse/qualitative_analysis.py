@@ -10,7 +10,7 @@ STRUCTURE DU SCRIPT
    - Comparer la définition (IAO:0000115 ou rdfs:comment).
    - Comparer la position dans la hiérarchie (parents directs is_a).
    - Identifier les changements dans les relations OBO (part_of, regulates…).
-3. Sortie : rapport Markdown + JSON structuré pour le rapport.
+3. Sortie : rapport Markdown.
 """
 
 from typing import Any, Dict, List, Optional

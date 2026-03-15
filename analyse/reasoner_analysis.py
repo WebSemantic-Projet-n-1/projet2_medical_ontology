@@ -49,7 +49,7 @@ REASONERS = ["HermiT"]
 # Vérification et configuration de Java
 # ---------------------------------------------------------------------------
 
-def get_java_version(java_exe: str) -> Tuple[int, str]:
+def get_java_version(java_exe: str) -> str[str]:
     """Retourne (version_majeure, chaîne_version_complète).
 
     version_majeure vaut 0 si la version n'a pas pu être déterminée.
@@ -66,13 +66,13 @@ def get_java_version(java_exe: str) -> Tuple[int, str]:
 
         match = re.search(r'"(\d+)[\.\-_]', first_line)
         if match:
-            return int(match.group(1)), first_line
+            return first_line
         match = re.search(r'"(\d+)"', first_line)
         if match:
-            return int(match.group(1)), first_line
-        return 0, first_line
+            return first_line
+        return first_line
     except Exception as exc:
-        return 0, str(exc)
+        return str(exc)
 
 
 def get_java_malloc() -> Optional[int]:

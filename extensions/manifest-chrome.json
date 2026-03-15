@@ -21,7 +21,7 @@
     {
       "matches": [
         "https://www.ebi.ac.uk/QuickGO/term/*",
-        "http://amigo.geneontology.org/amigo/term/*",
+        "https://amigo.geneontology.org/amigo/term/*",
         "https://www.ebi.ac.uk/ols/ontologies/go/terms/*",
         "https://www.ebi.ac.uk/ols4/ontologies/go/classes/*"
       ],

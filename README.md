@@ -29,7 +29,7 @@ projet2_medical_ontology/
 ├── analyse/               # Partie 1 : scripts d'analyse comparative GO
 │   ├── README.md
 │   ├── Dockerfile         # Image Java 25 + Python pour le raisonneur
-│   ├── docker-compose.yml # Lancement du raisonneur (12 Go de heap)
+│   ├── docker-compose.yml # Lancement du raisonneur (4 Go de heap)
 │   ├── requirements.txt   # Dépendances Python du raisonneur (copiées en requirements-reasoner.txt dans l'image Docker)
 │   ├── load_ontologies.py
 │   ├── quantitative_analysis.py
@@ -99,40 +99,6 @@ pip install -r service-web\requirements.txt
 ```
 
 **Windows (Git Bash) :** `source .venv/Scripts/activate` puis les mêmes commandes `pip`.
-
-### 3.3 Vérifier CUDA vs CPU
-
-Après installation, dans le venv :
-
-```bash
-python -c "from util.device import get_device; print(get_device())"
-```
-
-- Affiche `cuda` (ou `cuda:0`) si PyTorch voit le GPU.
-- Affiche `cpu` en repli (pas de GPU, driver manquant, ou PyTorch CPU installé).
-
-### 3.4 Choix manuel CUDA 11.8 / 12.1 / 12.4
-
-Par défaut, `requirements-cuda.txt` cible **CUDA 12.1** (compatible Linux et Windows). Si votre système a une autre version :
-
-- **CUDA 11.8** : remplacer dans `requirements-cuda.txt` `cu121` par `cu118`.
-- **CUDA 12.4** : remplacer par `cu124`.
-
-Puis réinstaller : `pip install -r requirements-cuda.txt`.
-
-### 3.5 Repli CPU (sans GPU)
-
-Sur une machine sans NVIDIA ou si vous préférez tout en CPU :
-
-```bash
-pip install -r requirements.txt
-pip install -r requirements-cpu.txt
-pip install -r service-web/requirements.txt
-```
-
-Le code utilise `util.device.get_device()` : il choisit **CUDA si disponible, sinon CPU**. Aucune modification de code n'est nécessaire pour passer de l'un à l'autre.
-
----
 
 ## 4. Données et domaines
 
