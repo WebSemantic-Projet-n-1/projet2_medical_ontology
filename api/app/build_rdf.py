@@ -30,7 +30,8 @@ UTILISATION
     python build_rdf.py
     python build_rdf.py --upload   # pour envoyer au triplestore Fuseki
 """
-
+import os
+from dotenv import load_dotenv
 import argparse
 import logging
 from pathlib import Path
@@ -335,11 +336,18 @@ def load_into_triplestore(g: Graph, named_graph_uri: URIRef, endpoint: str) -> b
     url      = f"{endpoint}/data"
     params   = {"graph": str(named_graph_uri)}
     headers  = {"Content-Type": "text/turtle; charset=utf-8"}
+    password = os.getenv("ADMIN_PASSWORD", "admin")
 
     log.info(f"  Envoi vers {url} (graphe: {named_graph_uri}) ...")
     try:
-        response = requests.put(url, data=ttl_data.encode("utf-8"),
-                                params=params, headers=headers, timeout=30)
+        response = requests.put(
+            url,
+            data=ttl_data.encode("utf-8"),
+            params=params,
+            headers=headers,
+            auth=("admin", password),
+            timeout=30
+        )
         response.raise_for_status()
         log.info(f"  Chargement réussi (HTTP {response.status_code}).")
         return True
