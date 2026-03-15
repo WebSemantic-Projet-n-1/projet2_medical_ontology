@@ -35,6 +35,7 @@ from dotenv import load_dotenv
 import argparse
 import logging
 from pathlib import Path
+from collections import deque
 
 import requests
 from rdflib import RDF, OWL, Graph, Literal, Namespace, URIRef
@@ -54,7 +55,6 @@ DOMAIN_ROOT = "http://purl.obolibrary.org/obo/GO_0006281"
 # Namespaces / l'EVO n'a pas besoin d'une réel url
 EVO_NS   = Namespace("http://example.org/evolution/")
 GO_NS    = Namespace("http://purl.obolibrary.org/obo/")
-OBO_NS   = Namespace("http://purl.obolibrary.org/obo/")
 
 # URIs des graphes nommés dans le triplestore
 GRAPH_OLD = URIRef("http://example.org/go/version/2025-10")
@@ -124,10 +124,10 @@ def _get_descendants(g: Graph, root: URIRef) -> set:
     On utilise une recherche en largeur (BFS) pour éviter la récursion.
     """
     visited = set()
-    queue   = [root]
+    queue   = deque([root])
 
     while queue:
-        current = queue.pop(0)
+        current = queue.popleft()
         for child in g.subjects(RDFS.subClassOf, current):
             if child not in visited and isinstance(child, URIRef):
                 visited.add(child)
@@ -237,6 +237,10 @@ def to_evo_rdf(terms: list[dict], version_uri: URIRef, version_date: str) -> Gra
     g.bind("rdfs", RDFS)
     g.bind("xsd",  XSD)
 
+    # Ensemble des IDs locaux (ex: GO_0006281) pour les termes effectivement exportés.
+    # Permet de distinguer les parents internes au sous-arbre de ceux qui sont externes.
+    exported_local_ids = {t["term_id"].replace("GO:", "GO_") for t in terms}
+
     # ── Instance de OntologyVersion ──
     g.add((version_uri, RDF.type,            EVO_NS.OntologyVersion))
     g.add((version_uri, EVO_NS.versionDate,  Literal(version_date, datatype=XSD.date)))
@@ -250,15 +254,24 @@ def to_evo_rdf(terms: list[dict], version_uri: URIRef, version_date: str) -> Gra
 
         g.add((term_ver_uri, RDF.type,               EVO_NS.TermVersion))
         g.add((term_ver_uri, EVO_NS.termID,          Literal(term["term_id"], datatype=XSD.string)))
-        g.add((term_ver_uri, EVO_NS.label,           Literal(term["label"], lang="en")))
-        g.add((term_ver_uri, EVO_NS.definition,      Literal(term["definition"], lang="en")))
+        label = term.get("label")
+        if isinstance(label, str) and label.strip():
+            g.add((term_ver_uri, EVO_NS.label,       Literal(label, lang="en")))
+        definition = term.get("definition")
+        if isinstance(definition, str) and definition.strip():
+            g.add((term_ver_uri, EVO_NS.definition,  Literal(definition, lang="en")))
         g.add((term_ver_uri, EVO_NS.isDeprecated,    Literal(term["is_deprecated"], datatype=XSD.boolean)))
         g.add((term_ver_uri, EVO_NS.belongsToVersion, version_uri))
 
         # Parents directs
         for parent_uri_str in term["parents"]:
             parent_local = parent_uri_str.split("/")[-1]
-            parent_ver   = URIRef(f"http://example.org/evolution/term/{parent_local}/{version_slug}")
+            # Si le parent fait partie des termes exportés, on construit une URI evo:term/...
+            # Sinon, on référence directement l'URI GO d'origine pour éviter des TermVersion orphelins.
+            if parent_local in exported_local_ids:
+                parent_ver = URIRef(f"http://example.org/evolution/term/{parent_local}/{version_slug}")
+            else:
+                parent_ver = URIRef(parent_uri_str)
             g.add((term_ver_uri, EVO_NS.hasParent, parent_ver))
 
         # Relations sémantiques (part_of, regulates, etc.)

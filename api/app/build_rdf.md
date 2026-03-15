@@ -72,7 +72,7 @@ g.serialize(format="turtle")
 
 - Version 2025-10 : **44 termes**
 - Version 2026-01 : **46 termes**
-- → **2 nouveaux termes** apparus dans le domaine DNA repair
+- → **+2 termes nets** dans le domaine DNA repair (3 nouveaux, 1 disparu)
 
 **Liens `evo:previousVersion` (43 sur 44)**
 
