@@ -40,6 +40,7 @@ def get_descendants(onto, root_go_id: str) -> Set[str]:
     root_iri = go_id_to_iri(root_go_id)
     try:
         q = (
+            "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> "
             "SELECT DISTINCT ?sub WHERE { "
             "?sub rdfs:subClassOf* <%s> . "
             "FILTER(ISIRI(?sub)) }"

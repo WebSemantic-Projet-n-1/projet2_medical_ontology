@@ -26,14 +26,11 @@ projet2_medical_ontology/
 ├── requirements-cuda.txt  # PyTorch avec CUDA (à installer en priorité si GPU dispo)
 ├── requirements-cpu.txt   # PyTorch CPU uniquement (repli si pas de CUDA)
 ├── data/                  # Fichiers OWL GO (à télécharger, voir data/README.md)
-├── util/                  # Utilitaires partagés (détection device CUDA/CPU)
-│   ├── __init__.py
-│   └── device.py
 ├── analyse/               # Partie 1 : scripts d'analyse comparative GO
 │   ├── README.md
 │   ├── Dockerfile         # Image Java 25 + Python pour le raisonneur
 │   ├── docker-compose.yml # Lancement du raisonneur (12 Go de heap)
-│   ├── requirements-reasoner.txt
+│   ├── requirements.txt   # Dépendances Python du raisonneur (copiées en requirements-reasoner.txt dans l'image Docker)
 │   ├── load_ontologies.py
 │   ├── quantitative_analysis.py
 │   ├── qualitative_analysis.py
@@ -224,10 +221,10 @@ Ces chemins correspondent à ceux utilisés par les scripts d'analyse (par exemp
 
 ## 6. Raisonneur OWL via Docker
 
-Le script `analyse/reasoner_analysis.py` tourne via Docker. L'image embarque **Java 25** et la JVM est configurée avec **`-Xmx12000M`** (12 Go de heap) — nécessaire pour raisonner sur GO (~52k classes) avec HermiT et Pellet.
+Le script `analyse/reasoner_analysis.py` tourne via Docker. L'image embarque **Java 25** et la JVM est configurée avec **`-Xmx4000M`** (4 Go de heap), en cohérence avec `analyse/reasoner_config.ini`, ce qui est suffisant pour raisonner sur GO (~52k classes) avec HermiT et Pellet dans le contexte du projet.
 
-> **Docker Desktop** : allouez au moins **14 Go** au moteur Docker
-> (Settings → Resources → Memory) pour que le conteneur dispose de 12 Go.
+> **Docker Desktop** : allouez au moins **6 Go** au moteur Docker
+> (Settings → Resources → Memory) pour que le conteneur dispose d'environ 4 Go pour la JVM, en tenant compte de l'overhead du système.
 
 ### Lancement depuis `analyse/`
 

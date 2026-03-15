@@ -7,7 +7,7 @@
 | `load_ontologies.py` | Charge les deux versions de GO et exporte les statistiques de base |
 | `quantitative_analysis.py` | Analyse quantitative du domaine DNA repair (classes, évolutions) |
 | `qualitative_analysis.py` | Analyse qualitative de 5 termes GO (définitions, hiérarchie, relations) |
-| `reasoner_analysis.py` | Raisonnement OWL avec HermiT et Pellet (cohérence, incohérences) |
+| `reasoner_analysis.py` | Raisonnement OWL avec HermiT (cohérence, incohérences) |
 
 ## Prérequis
 
@@ -15,7 +15,7 @@ Avoir complété la section "Installation des données GO (setup)" du README, av
 
 ## Exécution
 
-> HermiT/Pellet sur GO (~52k classes) requiert Java 25 et 12 Go de heap Java.
+> Le raisonneur HermiT sur GO (~52k classes) requiert Java 25 et 12 Go de heap Java.
 
 ### Scripts non-raisonneur (depuis la racine du projet)
 

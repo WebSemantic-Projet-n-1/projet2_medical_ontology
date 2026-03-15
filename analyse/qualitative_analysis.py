@@ -156,7 +156,17 @@ def compare_term(onto_old, onto_new, go_id: str) -> Dict[str, Any]:
         parents_old, parents_new, parents_added, parents_removed,
         relations_old, relations_new, relations_added, relations_removed
     """
-    label_new = get_label(onto_new, go_id) or get_label(onto_old, go_id)
+    # Récupération des labels dans chaque ontologie. get_label() retourne
+    # au minimum l'identifiant (go_id) si le terme est absent.
+    label_new = get_label(onto_new, go_id)
+    label_old = get_label(onto_old, go_id)
+
+    # Fallback explicite : si le nouveau label n'est qu'un identifiant brut
+    # mais que l'ancienne ontologie possède un vrai label, on utilise l'ancien.
+    if label_new == go_id and label_old != go_id:
+        label = label_old
+    else:
+        label = label_new
 
     def_old = get_definition(onto_old, go_id)
     def_new = get_definition(onto_new, go_id)
@@ -173,7 +183,7 @@ def compare_term(onto_old, onto_new, go_id: str) -> Dict[str, Any]:
 
     return {
         "go_id":               go_id,
-        "label":               label_new,
+        "label":               label,
         "definition_old":      def_old,
         "definition_new":      def_new,
         "definition_changed":  def_old != def_new,

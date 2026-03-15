@@ -20,12 +20,6 @@ VARIABLES / CONSTANTES À DÉFINIR
 DÉPENDANCES
 -----------
 - rdflib et/ou owlready2 (voir requirements.txt à la racine).
-
-DEVICE (CUDA / CPU)
--------------------
-Pour toute étape pouvant utiliser le GPU (ex. traitements batch lourds, embeddings),
-utiliser : from util.device import get_device ; device = get_device().
-Priorité CUDA, repli CPU automatique si indisponible.
 """
 
 from pathlib import Path

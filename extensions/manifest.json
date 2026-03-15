@@ -9,7 +9,7 @@
   ],
   "host_permissions": [
     "https://www.ebi.ac.uk/QuickGO/*",
-    "http://amigo.geneontology.org/*",
+    "https://amigo.geneontology.org/*",
     "https://www.ebi.ac.uk/ols/*",
     "https://www.ebi.ac.uk/ols4/*",
     "http://localhost:8000/*"
@@ -21,7 +21,7 @@
     {
       "matches": [
         "https://www.ebi.ac.uk/QuickGO/term/*",
-        "http://amigo.geneontology.org/amigo/term/*",
+        "https://amigo.geneontology.org/amigo/term/*",
         "https://www.ebi.ac.uk/ols/ontologies/go/terms/*",
         "https://www.ebi.ac.uk/ols4/ontologies/go/classes/*"
       ],

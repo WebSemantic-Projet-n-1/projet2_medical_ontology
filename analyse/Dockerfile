@@ -17,9 +17,8 @@ ENV PATH="/app/.venv/bin:$PATH"
 COPY analyse/requirements.txt ./requirements-reasoner.txt
 RUN pip install --no-cache-dir -r requirements-reasoner.txt
 
-# Code source : on copie le dossier analyse/ et util/ de la racine du projet.
+# Code source : on copie le dossier analyse/ de la racine du projet.
 COPY analyse/ ./analyse/
-COPY util/    ./util/
 
 # Volumes :
 # - /app/data            → fichiers OWL Gene Ontology (lecture seule)
