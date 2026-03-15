@@ -11,8 +11,8 @@ Hiver 2026.
 - **Objectifs** :
   1. Analyser deux versions de GO (ex. janvier 2026 vs octobre 2025).
   2. Modéliser les versions en RDF/OWL et les charger dans un triplestore.
-  3. Développer un service web d’analyse (API REST).
-  4. Créer une extension de navigateur qui enrichit les pages GO (QuickGO, AmiGO, OLS) avec des infos d’évolution.
+  3. Développer un service web d'analyse (API REST).
+  4. Créer une extension de navigateur qui enrichit les pages GO (QuickGO, AmiGO, OLS) avec des infos d'évolution.
 
 ---
 
@@ -26,16 +26,16 @@ projet2_medical_ontology/
 ├── requirements-cuda.txt  # PyTorch avec CUDA (à installer en priorité si GPU dispo)
 ├── requirements-cpu.txt   # PyTorch CPU uniquement (repli si pas de CUDA)
 ├── data/                  # Fichiers OWL GO (à télécharger, voir data/README.md)
-├── util/                  # Utilitaires partagés (détection device CUDA/CPU)
-│   ├── __init__.py
-│   └── device.py
-├── analyse/               # Partie 1 : scripts d’analyse comparative GO
+├── analyse/               # Partie 1 : scripts d'analyse comparative GO
 │   ├── README.md
+│   ├── Dockerfile         # Image Java 25 + Python pour le raisonneur
+│   ├── docker-compose.yml # Lancement du raisonneur (4 Go de heap)
+│   ├── requirements.txt   # Dépendances Python du raisonneur (copiées en requirements-reasoner.txt dans l'image Docker)
 │   ├── load_ontologies.py
 │   ├── quantitative_analysis.py
 │   ├── qualitative_analysis.py
 │   └── reasoner_analysis.py
-├── service-web/          # Partie 2 : API d’analyse
+├── service-web/          # Partie 2 : API d'analyse
 │   ├── README.md
 │   ├── requirements.txt
 │   ├── openapi.yaml
@@ -54,11 +54,13 @@ projet2_medical_ontology/
 - **Python** : 3.10+ (recommandé 3.11 ou 3.12).
 - **OS** : Linux ou Windows.
 - **CUDA** (prioritaire) : pilote NVIDIA + toolkit CUDA 11.8 ou 12.x pour utiliser le GPU. Sinon, le projet utilise le CPU automatiquement.
+- **Docker** : requis pour java, dépendance raisonneur OWL (HermiT/Pellet).
 - **Optionnel** : Docker pour triplestore (Jena Fuseki ou GraphDB).
+
 
 ### 3.2 Environnement virtuel (venv) – CUDA en priorité, puis CPU
 
-Le projet utilise un **venv local**. On installe **d’abord PyTorch avec CUDA** ; si l’installation échoue ou si aucun GPU n’est disponible, on bascule sur **PyTorch CPU**.
+Le projet utilise un **venv local**. On installe **d'abord PyTorch avec CUDA** ; si l'installation échoue ou si aucun GPU n'est disponible, on bascule sur **PyTorch CPU**.
 
 **Linux / macOS :**
 
@@ -98,68 +100,127 @@ pip install -r service-web\requirements.txt
 
 **Windows (Git Bash) :** `source .venv/Scripts/activate` puis les mêmes commandes `pip`.
 
-### 3.3 Vérifier CUDA vs CPU
-
-Après installation, dans le venv :
-
-```bash
-python -c "from util.device import get_device; print(get_device())"
-```
-
-- Affiche `cuda` (ou `cuda:0`) si PyTorch voit le GPU.
-- Affiche `cpu` en repli (pas de GPU, driver manquant, ou PyTorch CPU installé).
-
-### 3.4 Choix manuel CUDA 11.8 / 12.1 / 12.4
-
-Par défaut, `requirements-cuda.txt` cible **CUDA 12.1** (compatible Linux et Windows). Si votre système a une autre version :
-
-- **CUDA 11.8** : remplacer dans `requirements-cuda.txt` `cu121` par `cu118`.
-- **CUDA 12.4** : remplacer par `cu124`.
-
-Puis réinstaller : `pip install -r requirements-cuda.txt`.
-
-### 3.5 Repli CPU (sans GPU)
-
-Sur une machine sans NVIDIA ou si vous préférez tout en CPU :
-
-```bash
-pip install -r requirements.txt
-pip install -r requirements-cpu.txt
-pip install -r service-web/requirements.txt
-```
-
-Le code utilise `util.device.get_device()` : il choisit **CUDA si disponible, sinon CPU**. Aucune modification de code n’est nécessaire pour passer de l’un à l’autre.
-
----
-
 ## 4. Données et domaines
 
-- **GO** : deux versions (ex. janvier 2026, octobre 2025) depuis [Zenodo 18422732](https://zenodo.org/records/18422732).
+- **GO** : deux versions (ex. janvier 2026, octobre 2025) depuis [Zenodo 17382285](https://zenodo.org/records/17382285) et [Zenodo 18422732](https://zenodo.org/records/18422732).
 - **Domaines suggérés** (un à choisir) :
-  - Réparation de l’ADN (DNA repair) : GO:0006281
+  - Réparation de l'ADN (DNA repair) : GO:0006281
   - Apoptose : GO:0012501
   - Métabolisme des lipides : GO:0006629
-- **Pages cibles pour l’extension** : QuickGO, AmiGO 2, OLS (voir énoncé).
+- **Pages cibles pour l'extension** : QuickGO, AmiGO 2, OLS (voir énoncé).
 
 ---
 
-## 5. Utilisation rapide
+## 5. Installation des données GO (setup)
 
-- **Partie 1 (analyse)** : exécuter les scripts dans `analyse/` après téléchargement des OWL (voir `analyse/README.md`). Pour toute étape pouvant utiliser le GPU (ex. traitements batch, embeddings), les scripts s’appuient sur `util.device` (CUDA prioritaire, CPU en repli).
-- **Partie 2 (service web)** : lancer l’API depuis `service-web/` (voir `service-web/README.md`), triplestore devant être démarré (voir `triplestore/README.md`).
-- **Partie 3 (extension)** : charger le dossier `extension-chrome/` (ou `extension-firefox/`) en mode “développement” dans Chrome/Firefox.
+Les fichiers de données Gene Ontology ne sont **pas** versionnés dans le dépôt : vous devez les télécharger depuis Zenodo puis les placer dans `data/`.
+
+### 5.1 Téléchargement des archives Zenodo
+
+1. **Version octobre 2025**  
+   - Aller sur la page Zenodo : `https://zenodo.org/records/17382285`.  
+   - Télécharger l'archive.
+
+2. **Version janvier 2026**  
+   - Aller sur la page Zenodo : `https://zenodo.org/records/18422732`
+   - Télécharger l'archive.
+
+Placez ces deux fichiers `.tgz` dans un dossier temporaire (ou directement dans `data/` si vous préférez).
+
+### 5.2 Renommage des archives
+
+Pour rester cohérent avec les chemins utilisés dans les scripts, on adopte la convention suivante (dans le dossier racine du projet, ou dans `data/`) :
+
+- Renommer l'archive **octobre 2025** en `go-release-archive-10-25.tgz`
+- Renommer l'archive **janvier 2026** en `go-release-archive-01-26.tgz`
+
+L'important est que, après extraction, vous obteniez dans `data/` des dossiers :
+
+- `data/gene-ontology-10-25/...`
+- `data/gene-ontology-01-26/...`
+
+### 5.3 Extraction des fichiers (.tgz → .tar → dossier)
+
+Sous **Linux / macOS** (bash) :
+
+```bash
+cd data
+
+mkdir gene-ontology-01-26
+mkdir gene-ontology-10-25
+
+tar -xvf go-release-archive-10-25.tgz -C gene-ontology-10-25
+tar -xvf go-release-archive-01-26.tgz -C gene-ontology-01-26
+```
+
+Sous **Windows (PowerShell, avec tar intégré)** :
+
+```powershell
+cd .\data
+
+mkdir gene-ontology-01-26
+mkdir gene-ontology-10-25
+
+# Extraction
+tar -xvf .\go-release-archive-10-25.tgz -C .\gene-ontology-10-25
+tar -xvf .\go-release-archive-01-26.tgz -C .\gene-ontology-01-26
+```
+
+Selon la structure interne de l'archive Zenodo, il se peut qu'une première extraction crée un fichier `.tar`, puis une seconde extraction crée le dossier. Dans ce cas :
+
+```bash
+# Étape 1 : .tgz -> .tar
+tar -xvf go-release-archive-10-25.tgz
+
+# Étape 2 : .tar -> dossier dans data/
+tar -xvf go-release-archive-10-25.tar -C gene-ontology-10-25
+```
+
+Au final, vous devez obtenir notamment :
+
+- `data/gene-ontology-10-25/data/ontology/go.owl`
+- `data/gene-ontology-01-26/data/ontology/go.owl`
+
+Ces chemins correspondent à ceux utilisés par les scripts d'analyse (par exemple `analyse/load_ontologies.py`).
 
 ---
 
-## 6. Livrable Moodle
+## 6. Raisonneur OWL via Docker
+
+Le script `analyse/reasoner_analysis.py` tourne via Docker. L'image embarque **Java 25** et la JVM est configurée avec **`-Xmx4000M`** (4 Go de heap), en cohérence avec `analyse/reasoner_config.ini`, ce qui est suffisant pour raisonner sur GO (~52k classes) avec HermiT et Pellet dans le contexte du projet.
+
+> **Docker Desktop** : allouez au moins **6 Go** au moteur Docker
+> (Settings → Resources → Memory) pour que le conteneur dispose d'environ 4 Go pour la JVM, en tenant compte de l'overhead du système.
+
+### Lancement depuis `analyse/`
+
+```bash
+cd analyse
+docker compose build reasoner   # à faire une seule fois
+docker compose run --rm reasoner
+```
+
+Les résultats sont affichés dans la sortie standard du conteneur (logs Docker). Aucun fichier n’est généré dans `analyse/result/reasoner/` par défaut.
+
+---
+
+## 7. Utilisation rapide
+
+- **Partie 1 (analyse)** : `load_ontologies.py`, `quantitative_analysis.py` et `qualitative_analysis.py` s'exécutent depuis la racine (voir `analyse/README.md`). Le raisonneur se lance via Docker depuis `analyse/`.
+- **Partie 2 (service web)** : lancer l'API depuis `service-web/` (voir `service-web/README.md`), triplestore devant être démarré (voir `triplestore/README.md`).
+- **Partie 3 (extension)** : charger le dossier `extension-chrome/` (ou `extension-firefox/`) en mode "développement" dans Chrome/Firefox.
+
+---
+
+## 8. Livrable Moodle
 
 - **Nom du fichier** : `INF6253-P2-EquipeN.zip` (N = numéro/lettre du groupe).
-- **Contenu** : code source, `README.txt`, rapport PDF. Structure détaillée dans l’énoncé du projet.
+- **Contenu** : code source, `README.txt`, rapport PDF. Structure détaillée dans l'énoncé du projet.
 - **Date limite** : 29 mars 2026, 23h59.
 
 ---
 
-## 7. Références
+## 9. Références
 
 - Gene Ontology : <https://geneontology.org/docs/>
 - OWL 2 : <https://www.w3.org/TR/owl2-overview/>

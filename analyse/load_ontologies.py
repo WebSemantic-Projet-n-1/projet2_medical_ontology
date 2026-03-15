@@ -20,32 +20,103 @@ VARIABLES / CONSTANTES À DÉFINIR
 DÉPENDANCES
 -----------
 - rdflib et/ou owlready2 (voir requirements.txt à la racine).
-
-DEVICE (CUDA / CPU)
--------------------
-Pour toute étape pouvant utiliser le GPU (ex. traitements batch lourds, embeddings),
-utiliser : from util.device import get_device ; device = get_device().
-Priorité CUDA, repli CPU automatique si indisponible.
 """
 
-# TODO: imports
-# from pathlib import Path
-# import rdflib  # ou from owlready2 import get_ontology
+from pathlib import Path
+from typing import Any, Dict
 
-# TODO: chemins et namespaces
-# PATH_GO_OLD = Path(__file__).resolve().parent.parent / "data" / "go_2025-10.owl"
-# PATH_GO_NEW = Path(__file__).resolve().parent.parent / "data" / "go_2026-01.owl"
-# GO_NS = "http://purl.obolibrary.org/obo/"
+import pandas as pd
+from owlready2 import World
 
-# TODO: fonction load_ontology(path) -> graph ou ontology object
-# TODO: fonction get_stats(graph/ontology) -> dict avec nb classes, propriétés, axiomes
-# TODO: main : charger les deux, afficher les stats, (optionnel) exporter en JSON/texte
+BASE_DIR = Path(__file__).resolve().parent.parent
+DATA_DIR = BASE_DIR / "data"
+
+# Version ancienne (octobre 2025) et récente (janvier 2026)
+PATH_GO_OLD = DATA_DIR / "gene-ontology-10-25" / "data" / "ontology" / "go.owl"
+PATH_GO_NEW = DATA_DIR / "gene-ontology-01-26" / "data" / "ontology" / "go.owl"
+
+GO_NS = "http://purl.obolibrary.org/obo/"
 
 
+def load_ontology(path: Path):
+    """Charge une ontologie OWL dans un World owlready2 isolé.
+  
+    Chaque appel crée un World indépendant, ce qui évite les conflits d'IRI
+    lorsqu'on charge deux versions du même fichier (ex. deux releases de GO)
+    dans le même processus Python.
+    """
+    world = World()
+    return world.get_ontology(str(path)).load()
+  
+  
+def get_stats(onto, label: str, source_path: Path) -> Dict[str, Any]:
+    """Retourne les statistiques structurées d'une ontologie owlready2."""
+    num_classes = sum(1 for _ in onto.classes())
+
+    num_obj_props = sum(1 for _ in onto.object_properties())
+    num_data_props = sum(1 for _ in onto.data_properties())
+    num_annotation_props = sum(1 for _ in onto.annotation_properties())
+    num_properties = num_obj_props + num_data_props + num_annotation_props
+  
+    try:
+        num_axioms = sum(1 for _ in onto.axioms())
+    except Exception:
+        num_axioms = None
+    if num_axioms is None:
+        try:
+            w = onto.world
+            rdfs = "http://www.w3.org/2000/01/rdf-schema#"
+            owl_ns = "http://www.w3.org/2002/07/owl#"
+            total = 0
+            for pred in (f"<{rdfs}subClassOf>", f"<{owl_ns}equivalentClass>", f"<{owl_ns}disjointWith>"):
+                rows = list(w.sparql(f"SELECT (COUNT(*) AS ?n) {{ ?s {pred} ?o . }}"))
+                if rows and rows[0]:
+                    total += int(rows[0][0])
+            num_axioms = total if total else None  # SubClassOf + EquivalentClasses + DisjointWith (≈ Protégé Logical)
+        except Exception:
+            pass
+  
+    try:
+        num_individuals = sum(1 for _ in onto.individuals())
+    except Exception:
+        num_individuals = None
+  
+    return {
+        "label": label,
+        "fichier_owl": str(source_path),
+        "nb_classes": num_classes,
+        "proprietes": {
+            "total": num_properties,
+            "object_properties": num_obj_props,
+            "data_properties": num_data_props,
+            "annotation_properties": num_annotation_props,
+        },
+        "nb_axiomes": num_axioms,
+        "nb_individus": num_individuals,
+    }
+  
+  
 def main() -> None:
-    """Point d’entrée : chargement des deux versions et affichage de la structure."""
-    pass  # À implémenter
-
-
+    """Charge les deux versions de GO, affiche et exporte les statistiques."""
+    print(f"Ancienne ontologie (octobre 2025) : {PATH_GO_OLD}")
+    print(f"Nouvelle ontologie (janvier 2026)  : {PATH_GO_NEW}")
+  
+    onto_old = load_ontology(PATH_GO_OLD)
+    onto_new = load_ontology(PATH_GO_NEW)
+  
+    stats_old = get_stats(onto_old, "GO_10-25", PATH_GO_OLD)
+    stats_new = get_stats(onto_new, "GO_01-26", PATH_GO_NEW)
+  
+    # Affichage console
+    rows = {
+        "nb_classes": [stats_old["nb_classes"], stats_new["nb_classes"]],
+        "nb_proprietes": [stats_old["proprietes"]["total"], stats_new["proprietes"]["total"]],
+        "nb_axiomes": [stats_old["nb_axiomes"], stats_new["nb_axiomes"]],
+        "nb_individus": [stats_old["nb_individus"], stats_new["nb_individus"]],
+    }
+    df = pd.DataFrame(rows, index=["GO_10-25", "GO_01-26"])
+    print("\nRésumé des ontologies GO :")
+    print(df.to_string())
+  
 if __name__ == "__main__":
     main()
