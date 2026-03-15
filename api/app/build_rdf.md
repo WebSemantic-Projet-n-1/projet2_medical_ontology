@@ -92,3 +92,18 @@ g.serialize(format="turtle")
 | Liens `evo:previousVersion`  | —               | 43              |
 | Termes nouveaux              | —               | 3               |
 | Termes disparus              | 1               | —               |
+
+
+## Exemple requête SPARQL 
+
+**http://localhost:3030/#/dataset/ds/query**
+
+```
+SELECT ?s ?p ?o
+WHERE {
+  GRAPH ?g {
+    ?s ?p ?o
+  }
+}
+LIMIT 10
+```
