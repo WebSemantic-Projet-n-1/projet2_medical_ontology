@@ -57,15 +57,15 @@ def load_ontology(path: Path):
   
 def get_stats(onto, label: str, source_path: Path) -> Dict[str, Any]:
     """Retourne les statistiques structurées d'une ontologie owlready2."""
-    num_classes = len(list(onto.classes()))
-  
-    num_obj_props = len(list(onto.object_properties()))
-    num_data_props = len(list(onto.data_properties()))
-    num_annotation_props = len(list(onto.annotation_properties()))
+    num_classes = sum(1 for _ in onto.classes())
+
+    num_obj_props = sum(1 for _ in onto.object_properties())
+    num_data_props = sum(1 for _ in onto.data_properties())
+    num_annotation_props = sum(1 for _ in onto.annotation_properties())
     num_properties = num_obj_props + num_data_props + num_annotation_props
   
     try:
-      num_axioms = len(list(onto.axioms()))
+      num_axioms = sum(1 for _ in onto.axioms())
     except Exception:
       num_axioms = None
     if num_axioms is None:
@@ -83,7 +83,7 @@ def get_stats(onto, label: str, source_path: Path) -> Dict[str, Any]:
         pass
   
     try:
-      num_individuals = len(list(onto.individuals()))
+      num_individuals = sum(1 for _ in onto.individuals())
     except Exception:
       num_individuals = None
   
