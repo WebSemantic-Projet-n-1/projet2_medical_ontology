@@ -13,7 +13,6 @@ Prérequis
 """
 
 import configparser
-import json
 import re
 import shutil
 import subprocess
@@ -34,7 +33,6 @@ from load_ontologies import GO_NS, PATH_GO_NEW, PATH_GO_OLD
 
 SCRIPT_DIR = Path(__file__).resolve().parent
 CONFIG_PATH = SCRIPT_DIR / "reasoner_config.ini"
-RESULTS_DIR = SCRIPT_DIR / "result" / "reasoner"
 
 # ---------------------------------------------------------------------------
 # Domaine : DNA repair

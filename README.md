@@ -200,7 +200,7 @@ docker compose build reasoner   # à faire une seule fois
 docker compose run --rm reasoner
 ```
 
-Les résultats sont écrits dans `analyse/result/reasoner/` (côté hôte).
+Les résultats sont affichés dans la sortie standard du conteneur (logs Docker). Aucun fichier n’est généré dans `analyse/result/reasoner/` par défaut.
 
 ---
 

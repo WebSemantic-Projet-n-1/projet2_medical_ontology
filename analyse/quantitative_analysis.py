@@ -12,7 +12,7 @@ STRUCTURE DU SCRIPT
    - Nombre de classes nouvelles (présentes seulement dans la nouvelle version).
    - Nombre de classes dépréciées (owl:deprecated true).
    - Nombre de classes dont la hiérarchie a changé (parents directs différents).
-4. Sortie : tableaux / CSV pour le rapport.
+4. Sortie : tableaux (ex. DataFrame) pour le rapport.
 """
 
 from typing import Dict, Set
