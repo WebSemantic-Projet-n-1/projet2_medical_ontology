@@ -23,7 +23,7 @@ api/
 - Docker 24+ et Docker Compose v2
 - Fichiers OWL dans `../data/` :
   - `gene-ontology-10-25/data/ontology/go.owl` (version octobre 2025)
-  - `gene-ontology-01-26/data/ontology/go-basic.owl` (version janvier 2026)
+  - `gene-ontology-01-26/data/ontology/go.owl` (version janvier 2026)
 
 ## Lancer le triplestore
 

@@ -28,7 +28,7 @@ GRAPH_OLD="http://purl.obolibrary.org/obo/go/version/2025-10"
 GRAPH_NEW="http://purl.obolibrary.org/obo/go/version/2026-01"
 
 FILE_OLD="${DATA_DIR}/${GRAPH_OLD_DIR}/go.owl"
-FILE_NEW="${DATA_DIR}/${GRAPH_NEW_DIR}/go-basic.owl"
+FILE_NEW="${DATA_DIR}/${GRAPH_NEW_DIR}/go.owl"
 
 MARKER="/fuseki/.data-loaded"
 

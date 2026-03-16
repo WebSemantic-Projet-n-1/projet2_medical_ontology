@@ -46,8 +46,8 @@ from rdflib.namespace import RDFS, XSD
 # ───
 
 # Chemins fichiers OWL dossier data / Ancien et nouveau
-PATH_GO_OLD = Path("data/gene-ontology-10-25/data/ontology/go-basic.owl") # 10 - 2025
-PATH_GO_NEW = Path("data/gene-ontology-01-26/data/ontology/go-basic.owl") # 01 - 2026
+PATH_GO_OLD = Path("data/gene-ontology-10-25/data/ontology/go.owl") # 10 - 2025
+PATH_GO_NEW = Path("data/gene-ontology-01-26/data/ontology/go.owl") # 01 - 2026
 
 # Racine du domaine étudié : DNA repair
 DOMAIN_ROOT = "http://purl.obolibrary.org/obo/GO_0006281"

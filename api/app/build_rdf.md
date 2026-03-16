@@ -11,29 +11,22 @@ py api/app/build_rdf.py
 ## Logs d'exécution
 
 ```
-2026-03-14 16:41:14  [INFO]  === Extraction version ancienne (2025-10) ===
-2026-03-14 16:41:14  [INFO]  Chargement de data\gene-ontology-10-25\data\ontology\go-basic.owl ...
-2026-03-14 16:42:29  [INFO]    1 265 006 triplets chargés.
-2026-03-14 16:42:29  [INFO]    44 termes trouvés sous GO:0006281
-
-2026-03-14 16:42:29  [INFO]  === Extraction version nouvelle (2026-01) ===
-2026-03-14 16:42:29  [INFO]  Chargement de data\gene-ontology-01-26\data\ontology\go-basic.owl ...
-2026-03-14 16:48:50  [INFO]    1 275 164 triplets chargés.
-2026-03-14 16:48:50  [INFO]    46 termes trouvés sous GO:0006281
-
-2026-03-14 16:48:50  [INFO]  === Génération des graphes RDF ===
-2026-03-14 16:48:50  [INFO]    Graphe généré : 331 triplets pour 44 termes.
-2026-03-14 16:48:50  [INFO]    Graphe généré : 347 triplets pour 46 termes.
-
-2026-03-14 16:48:50  [INFO]  === Ajout des liens previousVersion ===
-2026-03-14 16:48:50  [INFO]    43 liens evo:previousVersion ajoutés.
-
-2026-03-14 16:48:50  [INFO]  Fichiers écrits :
-                               output\go_dna_repair_2025-10.ttl
-                               output\go_dna_repair_2026-01.ttl
-
-2026-03-14 16:48:50  [INFO]  (Upload ignoré — relancez avec --upload pour envoyer à Fuseki.)
-2026-03-14 16:48:50  [INFO]  === Terminé ===
+2026-03-15 22:44:37,533 [INFO] === Extraction version ancienne (2025-10) ===
+2026-03-15 22:44:37,533 [INFO] Chargement de data/gene-ontology-10-25/data/ontology/go.owl ...
+2026-03-15 22:46:23,049 [INFO]   1425391 triplets chargés.
+2026-03-15 22:46:23,050 [INFO]   44 termes trouvés sous http://purl.obolibrary.org/obo/GO_0006281
+2026-03-15 22:46:23,053 [INFO] === Extraction version nouvelle (2026-01) ===
+2026-03-15 22:46:23,053 [INFO] Chargement de data/gene-ontology-01-26/data/ontology/go.owl ...
+2026-03-15 22:48:11,943 [INFO]   1436273 triplets chargés.
+2026-03-15 22:48:11,944 [INFO]   46 termes trouvés sous http://purl.obolibrary.org/obo/GO_0006281
+2026-03-15 22:48:11,947 [INFO] === Génération des graphes RDF ===    
+2026-03-15 22:48:11,956 [INFO]   Graphe généré : 332 triplets pour 44 termes.
+2026-03-15 22:48:11,965 [INFO]   Graphe généré : 348 triplets pour 46 termes.
+2026-03-15 22:48:11,965 [INFO] === Ajout des liens previousVersion ===
+2026-03-15 22:48:11,974 [INFO]   43 liens evo:previousVersion ajoutés.
+2026-03-15 22:48:12,047 [INFO]   Fichiers écrits : output/go_dna_repair_2025-10.ttl, output/go_dna_repair_2026-01.ttl
+2026-03-15 22:48:12,048 [INFO] (Upload ignoré — relancez avec --upload pour envoyer à Fuseki.)
+2026-03-15 22:48:12,048 [INFO] === Terminé ===
 ```
 
 ---
@@ -41,7 +34,7 @@ py api/app/build_rdf.py
 ## Pipeline de génération des fichiers .ttl
 
 ```
-go-basic.owl
+go.owl
      │
      ▼
 extract_terms()          ← trouve tous les descendants de GO:0006281
