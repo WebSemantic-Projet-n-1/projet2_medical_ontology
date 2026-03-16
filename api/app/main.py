@@ -16,7 +16,7 @@ DOCUMENTATION
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-
+from fastapi.responses import HTMLResponse
 from routes import domain, search, terms
 
 # ───
@@ -31,13 +31,6 @@ app = FastAPI(
         "pour le domaine DNA repair (GO:0006281)."
     ),
     version="1.0.0",
-    contact={
-        "name": "INF6253 — Équipe",
-        "email": "etiennegael.tajeuna@uqo.ca",
-    },
-    license_info={
-        "name": "Université du Québec en Outaouais",
-    },
 )
 
 # ───
@@ -65,10 +58,38 @@ app.include_router(search.router, prefix="/api")
 
 @app.get("/", tags=["health"])
 def root():
-    """ ça Vérifie que l'API est fonctionnel."""
+    """ Vérifie que l'API est fonctionnelle."""
     return {
         "status": "ok",
         "service": "GO Evolution API",
         "version": "1.0.0",
         "docs": "/docs",
     }
+
+# def swagger_ui_html():
+
+@app.get("/swagger", response_class=HTMLResponse, tags=["docs"])
+def swagger_ui_html():
+    """
+    Swagger UI custom view rendering the OpenAPI YAML.
+    """
+    with open("openapi.yaml", "r", encoding="utf-8") as f:
+        yaml_content = f.read()
+    # Simple HTML rendering of the YAML (read-only, just for viewing)
+    html = f"""
+    <html>
+    <head>
+        <title>openapi.yaml (Swagger)</title>
+        <style>
+            body {{ font-family: monospace; background: #23272e; color: #eaeaea; }}
+            pre  {{ background: #181c20; border-radius: 6px; padding: 20px; overflow-x: auto; font-size: 16px; line-height: 1.5; }}
+        </style>
+    </head>
+    <body>
+        <h2>openapi.yaml</h2>
+        <pre>{yaml_content}</pre>
+        <p><a href="/docs">[→ Documentation interactive /docs]</a></p>
+    </body>
+    </html>
+    """
+    return HTMLResponse(content=html)

@@ -67,3 +67,11 @@ docker compose down -v
 | `FUSEKI_URL` | `http://fuseki:3030` | URL interne Fuseki (entre conteneurs) |
 | `FUSEKI_DATASET` | `ds` | Nom du dataset SPARQL |
 | `SPARQL_ENDPOINT` | `http://localhost:3030/ds/query` | Endpoint utilisé par l'API |
+
+# Serveur web
+
+| URL | Interface |
+|---|---|
+| `http://localhost:8000/docs` | Swagger UI (interactif) |
+| `http://localhost:8000/redoc` | ReDoc (lecture seule) |
+| `http://localhost:8000/openapi.json` | Schéma OpenAPI brut |

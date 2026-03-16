@@ -31,13 +31,11 @@ UTILISATION
     python build_rdf.py --upload   # pour envoyer au triplestore Fuseki
 """
 import os
-from dotenv import load_dotenv
 import argparse
 import logging
+import requests
 from pathlib import Path
 from collections import deque
-
-import requests
 from rdflib import RDF, OWL, Graph, Literal, Namespace, URIRef
 from rdflib.namespace import RDFS, XSD
 
@@ -45,9 +43,16 @@ from rdflib.namespace import RDFS, XSD
 # CONFIG
 # ───
 
-# Chemins fichiers OWL dossier data / Ancien et nouveau
-PATH_GO_OLD = Path("data/gene-ontology-10-25/data/ontology/go.owl") # 10 - 2025
-PATH_GO_NEW = Path("data/gene-ontology-01-26/data/ontology/go.owl") # 01 - 2026
+# Chemins fichiers OWL — surchargeables via variables d'environnement
+# (utile pour Docker où les fichiers sont montés sous /data)
+PATH_GO_OLD = Path(os.getenv(
+    "PATH_GO_OLD",
+    "data/gene-ontology-10-25/data/ontology/go.owl",
+))
+PATH_GO_NEW = Path(os.getenv(
+    "PATH_GO_NEW",
+    "data/gene-ontology-01-26/data/ontology/go.owl",
+))
 
 # Racine du domaine étudié : DNA repair
 DOMAIN_ROOT = "http://purl.obolibrary.org/obo/GO_0006281"
@@ -60,8 +65,10 @@ GO_NS    = Namespace("http://purl.obolibrary.org/obo/")
 GRAPH_OLD = URIRef("http://example.org/go/version/2025-10")
 GRAPH_NEW = URIRef("http://example.org/go/version/2026-01")
 
-# Endpoint Fuseki
-FUSEKI_ENDPOINT = "http://localhost:3030/ds"
+# Endpoint Fuseki — surcharge via FUSEKI_URL + FUSEKI_DATASET pour Docker
+_fuseki_base    = os.getenv("FUSEKI_URL",     "http://localhost:3030")
+_fuseki_dataset = os.getenv("FUSEKI_DATASET", "ds")
+FUSEKI_ENDPOINT = f"{_fuseki_base}/{_fuseki_dataset}"
 
 # Dates de publication
 VERSION_DATE_OLD = "2025-10-01"
