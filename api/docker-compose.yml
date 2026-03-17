@@ -77,8 +77,8 @@ services:
       FUSEKI_URL: http://fuseki:3030
       FUSEKI_DATASET: ${FUSEKI_DATASET}
       ADMIN_PASSWORD: ${ADMIN_PASSWORD}
-      PATH_GO_OLD: /data/gene-ontology-10-25/data/ontology/go-basic.owl
-      PATH_GO_NEW: /data/gene-ontology-01-26/data/ontology/go-basic.owl
+      PATH_GO_NEW: /data/gene-ontology-01-26/data/ontology/go .owl
+      PATH_GO_OLD: /data/gene-ontology-10-25/data/ontology/go .owl
     depends_on:
       fuseki:
         condition: service_healthy
