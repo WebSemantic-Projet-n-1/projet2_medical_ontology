@@ -52,6 +52,18 @@ const STATUS_LABELS = {
   new: "Nouveau",
 };
 
+function getPrimaryTermLabel(data) {
+  return data?.label || data?.new?.label || data?.old?.label || "";
+}
+
+function getOldDefinition(data) {
+  return data?.old?.definition || data?.definition_old || "";
+}
+
+function getNewDefinition(data) {
+  return data?.new?.definition || data?.definition_new || "";
+}
+
 /**
  * Normalize status coming from the background/API to a known, safe value.
  * Falls back to "stable" if the value is missing or unrecognized.
@@ -131,13 +143,14 @@ function injectBadge(data) {
   }
 
   const safeStatus = normalizeStatus(data.status);
-  LOG(`Injecting badge: status=${safeStatus}, go_id=${data.go_id}, label=${data.label}`);
+  const termLabel = getPrimaryTermLabel(data);
+  LOG(`Injecting badge: status=${safeStatus}, go_id=${data.go_id}, label=${termLabel}`);
 
   const badge = document.createElement("button");
   badge.type = "button";
   badge.className = `go-evo-badge go-evo-${safeStatus}`;
   badge.textContent = STATUS_LABELS[safeStatus];
-  badge.title = `${data.go_id} — ${data.label}`;
+  badge.title = termLabel ? `${data.go_id} — ${termLabel}` : data.go_id;
 
   const details = buildDetailsPanel(data);
   const detailsId = `go-evo-details-${data.go_id}`;
@@ -168,6 +181,9 @@ function buildDetailsPanel(d) {
   panel.className = "go-evo-details";
   panel.style.display = "none";
 
+  const termLabel = getPrimaryTermLabel(d);
+  const oldDefinition = getOldDefinition(d);
+  const newDefinition = getNewDefinition(d);
   const showTree = (d.hierarchy_old || d.hierarchy_new) &&
     d.hierarchy_old !== d.hierarchy_new;
 
@@ -177,17 +193,17 @@ function buildDetailsPanel(d) {
 
   panel.innerHTML = `
     <div class="go-evo-details-header">
-      <h3>${esc(d.go_id)} — ${esc(d.label)}</h3>
+      <h3>${esc(d.go_id)}${termLabel ? ` — ${esc(termLabel)}` : ""}</h3>
       <button type="button" class="go-evo-close" aria-label="Fermer le panneau de détails">&times;</button>
     </div>
     <div class="go-evo-details-body">
       <div class="go-evo-col">
         <h4>Ancienne définition</h4>
-        <p>${esc(d.definition_old) || "<em>N/A</em>"}</p>
+        <p>${esc(oldDefinition) || "<em>N/A</em>"}</p>
       </div>
       <div class="go-evo-col">
         <h4>Nouvelle définition</h4>
-        <p>${esc(d.definition_new) || "<em>N/A</em>"}</p>
+        <p>${esc(newDefinition) || "<em>N/A</em>"}</p>
       </div>
     </div>
     ${showTree ? buildTreeComparison(d.hierarchy_old, d.hierarchy_new) : ""}
