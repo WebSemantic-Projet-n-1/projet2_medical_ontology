@@ -54,7 +54,7 @@ projet2_medical_ontology/
 - **Python** : 3.10+ (recommandé 3.11 ou 3.12).
 - **OS** : Linux ou Windows.
 - **CUDA** (prioritaire) : pilote NVIDIA + toolkit CUDA 11.8 ou 12.x pour utiliser le GPU. Sinon, le projet utilise le CPU automatiquement.
-- **Docker** : requis pour java, dépendance raisonneur OWL (HermiT/Pellet).
+- **Docker** : recommandé pour exécuter le raisonneur OWL (HermiT/Pellet) via l'image fournie ; sinon, installer Java 25 localement.
 - **Optionnel** : Docker pour triplestore (Jena Fuseki ou GraphDB).
 
 
