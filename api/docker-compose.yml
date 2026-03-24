@@ -22,7 +22,7 @@ services:
       timeout: 5s
       retries: 8
       start_period: 30s
-    restart: unless-stopped
+    restart: "no"
 
   # ── Chargement initial des fichiers OWL (one-shot, idempotent) ───────────────
   #
@@ -58,7 +58,68 @@ services:
       # .data-loaded soit visible des deux conteneurs.
       - fuseki-data:/fuseki
     restart: "no"
+  # ── Génération et chargement des graphes evo: (one-shot, idempotent) ─────────
+  #
+  # Parse les deux fichiers OWL avec rdflib, génère les triplets evo:,
+  # puis les envoie dans Fuseki via HTTP PUT.
+  # Un marqueur /marker/.rdf-built évite de recharger lors des redémarrages.
+  #
+  # Graphes créés :
+  #   http://example.org/go/version/2025-10
+  #   http://example.org/go/version/2026-01
+  rdf-builder:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: rdf-builder
+    env_file: .env
+    environment:
+      FUSEKI_URL: http://fuseki:3030
+      FUSEKI_DATASET: ${FUSEKI_DATASET}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD}
+      PATH_GO_NEW: /data/gene-ontology-01-26/data/ontology/go .owl
+      PATH_GO_OLD: /data/gene-ontology-10-25/data/ontology/go .owl
+    depends_on:
+      fuseki:
+        condition: service_healthy
+    volumes:
+      # Fichiers OWL sources (lecture seule)
+      - ../data:/data:ro
+      # Volume dédié au marqueur d'idempotence
+      - rdf-marker:/marker
+    entrypoint:
+      - /bin/sh
+      - -c
+      - |
+        if [ -f /marker/.rdf-built ]; then
+          echo "[rdf-builder] Graphes evo: déjà chargés. Abandon.";
+          exit 0;
+        fi;
+        python triplestore/build_rdf.py --upload --output-dir /tmp/rdf-output &&
+        touch /marker/.rdf-built &&
+        echo "[rdf-builder] Terminé."
+    restart: "no"
+
+  # ── API FastAPI ───────────────────────────────────────────────────────────────
+  fastapi:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: fastapi
+    ports:
+      - "8000:8000"
+    env_file: .env
+    environment:
+      SPARQL_ENDPOINT: http://fuseki:3030/ds/query
+    depends_on:
+      fuseki:
+        condition: service_healthy
+      rdf-builder:
+        condition: service_completed_successfully
+    restart: "no"
 
 volumes:
   fuseki-data:
     name: go-fuseki-data
+  rdf-marker:
+    name: go-rdf-marker

@@ -1,0 +1,3 @@
+# Used for triplestore/build_rdf.py 
+requests
+rdflib

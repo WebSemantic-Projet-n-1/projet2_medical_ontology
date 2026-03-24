@@ -1,0 +1,380 @@
+@prefix evo: <http://example.org/evolution/> .
+@prefix go: <http://purl.obolibrary.org/obo/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<http://example.org/evolution/term/GO_0000719/2025-10> a evo:TermVersion ;
+    evo:belongsToVersion <http://example.org/go/version/2025-10> ;
+    evo:definition "The repair of UV-induced T-T, C-T and C-C dimers by directly reversing the damage to restore the original pyrimidines."@en ;
+    evo:hasParent <http://example.org/evolution/term/GO_0006290/2025-10> ;
+    evo:isDeprecated false ;
+    evo:label "photoreactive repair"@en ;
+    evo:termID "GO:0000719"^^xsd:string .
+
+<http://example.org/evolution/term/GO_0000720/2025-10> a evo:TermVersion ;
+    evo:belongsToVersion <http://example.org/go/version/2025-10> ;
+    evo:definition "The repair of UV-induced T-T, C-T, and C-C dimers by the recognition and removal of the damaged DNA strand from the DNA helix as an oligonucleotide. The small gap left in the DNA helix is filled in by the sequential action of DNA polymerase and DNA ligase."@en ;
+    evo:hasParent <http://example.org/evolution/term/GO_0006289/2025-10>,
+        <http://example.org/evolution/term/GO_0006290/2025-10> ;
+    evo:isDeprecated false ;
+    evo:label "pyrimidine dimer repair by nucleotide-excision repair"@en ;
+    evo:termID "GO:0000720"^^xsd:string .
+
+<http://example.org/evolution/term/GO_0000727/2025-10> a evo:TermVersion ;
+    evo:belongsToVersion <http://example.org/go/version/2025-10> ;
+    evo:definition "The error-free repair of a double-strand break in DNA in which the centromere-proximal end of a broken chromosome searches for a homologous region in an intact chromosome. DNA synthesis initiates from the 3' end of the invading DNA strand, using the intact chromosome as the template, and progresses to the end of the chromosome."@en ;
+    evo:hasParent <http://example.org/evolution/term/GO_0000724/2025-10> ;
+    evo:isDeprecated false ;
+    evo:label "double-strand break repair via break-induced replication"@en ;
+    evo:termID "GO:0000727"^^xsd:string .
+
+<http://example.org/evolution/term/GO_0006283/2025-10> a evo:TermVersion ;
+    evo:belongsToVersion <http://example.org/go/version/2025-10> ;
+    evo:definition "The nucleotide-excision repair process that carries out preferential repair of DNA lesions on the actively transcribed strand of the DNA duplex. In addition, the transcription-coupled nucleotide-excision repair pathway is required for the recognition and repair of a small subset of lesions that are not recognized by the global genome nucleotide excision repair pathway."@en ;
+    evo:hasParent <http://example.org/evolution/term/GO_0006289/2025-10> ;
+    evo:isDeprecated false ;
+    evo:label "transcription-coupled nucleotide-excision repair"@en ;
+    evo:termID "GO:0006283"^^xsd:string .
+
+<http://example.org/evolution/term/GO_0006307/2025-10> a evo:TermVersion ;
+    evo:belongsToVersion <http://example.org/go/version/2025-10> ;
+    evo:definition "The repair of alkylation damage in DNA, e.g. the removal of a non-physiological alkyl group from a nucleobase. This is usually mediated by DNA alkyltransferases."@en ;
+    evo:hasParent <http://example.org/evolution/term/GO_0006281/2025-10> ;
+    evo:isDeprecated false ;
+    evo:label "DNA alkylation repair"@en ;
+    evo:termID "GO:0006307"^^xsd:string .
+
+<http://example.org/evolution/term/GO_0010213/2025-10> a evo:TermVersion ;
+    evo:belongsToVersion <http://example.org/go/version/2025-10> ;
+    evo:definition "A DNA repair process that is involved in repairing UV-induced DNA damage under non-photoreactivating conditions. The mechanism by which this repair process operates has not yet been completely elucidated."@en ;
+    evo:hasParent <http://example.org/evolution/term/GO_0006281/2025-10> ;
+    evo:isDeprecated false ;
+    evo:label "non-photoreactive DNA repair"@en ;
+    evo:termID "GO:0010213"^^xsd:string .
+
+<http://example.org/evolution/term/GO_0010776/2025-10> a evo:TermVersion ;
+    evo:belongsToVersion <http://example.org/go/version/2025-10> ;
+    evo:definition "A system for the identification and correction of base-base mismatches, small insertion-deletion loops, and regions of heterology that are present in duplex DNA formed with strands from two recombining molecules resulting in meiotic gene conversion. Meiotic gene conversion is the cell cycle process in which genetic information is transferred from one helix to another."@en ;
+    evo:hasParent <http://example.org/evolution/term/GO_0000710/2025-10> ;
+    evo:isDeprecated false ;
+    evo:label "meiotic mismatch repair involved in meiotic gene conversion"@en ;
+    evo:termID "GO:0010776"^^xsd:string ;
+    go:BFO_0000050 <http://example.org/evolution/term/GO_0006311/2025-10> .
+
+<http://example.org/evolution/term/GO_0010777/2025-10> a evo:TermVersion ;
+    evo:belongsToVersion <http://example.org/go/version/2025-10> ;
+    evo:definition "A system for the identification and correction of base-base mismatches, small insertion-deletion loops, and regions of heterology that are present in duplex DNA formed with strands from two recombining molecules resulting in meiotic recombination. Meiotic recombination is the cell cycle process in which double strand breaks are formed and repaired through a double Holliday junction intermediate."@en ;
+    evo:hasParent <http://example.org/evolution/term/GO_0000710/2025-10> ;
+    evo:isDeprecated false ;
+    evo:label "meiotic mismatch repair involved in reciprocal meiotic recombination"@en ;
+    evo:termID "GO:0010777"^^xsd:string ;
+    go:BFO_0000050 <http://example.org/evolution/term/GO_0007131/2025-10> .
+
+<http://example.org/evolution/term/GO_0036298/2025-10> a evo:TermVersion ;
+    evo:belongsToVersion <http://example.org/go/version/2025-10> ;
+    evo:definition "Removal of a DNA interstrand crosslink (a covalent attachment of DNA bases on opposite strands of the DNA) and restoration of the DNA by a mechanism that involves the exchange, reciprocal or nonreciprocal, of genetic material between the broken DNA molecule and a homologous DNA region."@en ;
+    evo:hasParent <http://example.org/evolution/term/GO_0000725/2025-10>,
+        <http://example.org/evolution/term/GO_0036297/2025-10> ;
+    evo:isDeprecated false ;
+    evo:label "recombinational interstrand cross-link repair"@en ;
+    evo:termID "GO:0036298"^^xsd:string .
+
+<http://example.org/evolution/term/GO_0036299/2025-10> a evo:TermVersion ;
+    evo:belongsToVersion <http://example.org/go/version/2025-10> ;
+    evo:definition "Removal of a DNA interstrand crosslink (a covalent attachment of DNA bases on opposite strands of the DNA) and restoration of the DNA by a mechanism that does not involve homologous DNA recombination."@en ;
+    evo:hasParent <http://example.org/evolution/term/GO_0036297/2025-10> ;
+    evo:isDeprecated false ;
+    evo:label "non-recombinational interstrand cross-link repair"@en ;
+    evo:termID "GO:0036299"^^xsd:string .
+
+<http://example.org/evolution/term/GO_0043504/2025-10> a evo:TermVersion ;
+    evo:belongsToVersion <http://example.org/go/version/2025-10> ;
+    evo:definition "The process of restoring mitochondrial DNA after damage."@en ;
+    evo:hasParent <http://example.org/evolution/term/GO_0006281/2025-10>,
+        <http://example.org/evolution/term/GO_0032042/2025-10> ;
+    evo:isDeprecated false ;
+    evo:label "mitochondrial DNA repair"@en ;
+    evo:termID "GO:0043504"^^xsd:string .
+
+<http://example.org/evolution/term/GO_0045002/2025-10> a evo:TermVersion ;
+    evo:belongsToVersion <http://example.org/go/version/2025-10> ;
+    evo:definition "Repair of a DSB made between two repeated sequences oriented in the same direction occurs primarily by the single strand annealing pathway. The ends of the break are processed by a 5' to 3' exonuclease, exposing complementary single-strand regions of the direct repeats that can anneal, resulting in a deletion of the unique DNA between the direct repeats."@en ;
+    evo:hasParent <http://example.org/evolution/term/GO_0006302/2025-10> ;
+    evo:isDeprecated false ;
+    evo:label "double-strand break repair via single-strand annealing"@en ;
+    evo:termID "GO:0045002"^^xsd:string .
+
+<http://example.org/evolution/term/GO_0045003/2025-10> a evo:TermVersion ;
+    evo:belongsToVersion <http://example.org/go/version/2025-10> ;
+    evo:definition "SDSA is a major mechanism of double-strand break repair in mitosis which allows for the error-free repair of a double-strand break without the exchange of adjacent sequences. The broken DNA searches for and base pairs with a homologous region in an intact chromosome. DNA synthesis initiates from the 3' end of the invading DNA strand, using the intact chromosome as the template. Newly synthesized DNA is then displaced from the template and anneal with its complement on the other side of the double-strand break."@en ;
+    evo:hasParent <http://example.org/evolution/term/GO_0000724/2025-10> ;
+    evo:isDeprecated false ;
+    evo:label "double-strand break repair via synthesis-dependent strand annealing"@en ;
+    evo:termID "GO:0045003"^^xsd:string .
+
+<http://example.org/evolution/term/GO_0045004/2025-10> a evo:TermVersion ;
+    evo:belongsToVersion <http://example.org/go/version/2025-10> ;
+    evo:definition "Correction of replication errors by DNA polymerase using a 3'-5' exonuclease activity."@en ;
+    evo:hasParent <http://example.org/evolution/term/GO_0006281/2025-10>,
+        <http://example.org/evolution/term/GO_0045005/2025-10> ;
+    evo:isDeprecated false ;
+    evo:label "DNA replication proofreading"@en ;
+    evo:termID "GO:0045004"^^xsd:string .
+
+<http://example.org/evolution/term/GO_0046787/2025-10> a evo:TermVersion ;
+    evo:belongsToVersion <http://example.org/go/version/2025-10> ;
+    evo:definition "The process of restoring viral DNA after damage or errors in replication."@en ;
+    evo:hasParent <http://example.org/evolution/term/GO_0006281/2025-10> ;
+    evo:isDeprecated false ;
+    evo:label "viral DNA repair"@en ;
+    evo:termID "GO:0046787"^^xsd:string ;
+    go:BFO_0000050 <http://example.org/evolution/term/GO_0016032/2025-10> .
+
+<http://example.org/evolution/term/GO_0070911/2025-10> a evo:TermVersion ;
+    evo:belongsToVersion <http://example.org/go/version/2025-10> ;
+    evo:definition "The nucleotide-excision repair process in which DNA lesions are removed from nontranscribed strands and from transcriptionally silent regions over the entire genome."@en ;
+    evo:hasParent <http://example.org/evolution/term/GO_0006289/2025-10> ;
+    evo:isDeprecated false ;
+    evo:label "global genome nucleotide-excision repair"@en ;
+    evo:termID "GO:0070911"^^xsd:string .
+
+<http://example.org/evolution/term/GO_0070914/2025-10> a evo:TermVersion ;
+    evo:belongsToVersion <http://example.org/go/version/2025-10> ;
+    evo:definition "A DNA repair process that is initiated by an endonuclease that introduces a single-strand incision immediately 5' of a UV-induced damage site. UV-damage excision repair acts on both cyclobutane pyrimidine dimers (CPDs) and pyrimidine-pyrimidone 6-4 photoproducts (6-4PPs)."@en ;
+    evo:hasParent <http://example.org/evolution/term/GO_0006281/2025-10>,
+        <http://example.org/evolution/term/GO_0034644/2025-10> ;
+    evo:isDeprecated false ;
+    evo:label "UV-damage excision repair"@en ;
+    evo:termID "GO:0070914"^^xsd:string .
+
+<http://example.org/evolution/term/GO_0097552/2025-10> a evo:TermVersion ;
+    evo:belongsToVersion <http://example.org/go/version/2025-10> ;
+    evo:definition "The repair of a double-strand break in mitochondrial DNA in which the broken DNA molecule is repaired using homologous sequences."@en ;
+    evo:hasParent <http://example.org/evolution/term/GO_0000725/2025-10>,
+        <http://example.org/evolution/term/GO_0097551/2025-10> ;
+    evo:isDeprecated false ;
+    evo:label "mitochondrial double-strand break repair via homologous recombination"@en ;
+    evo:termID "GO:0097552"^^xsd:string .
+
+<http://example.org/evolution/term/GO_0097680/2025-10> a evo:TermVersion ;
+    evo:belongsToVersion <http://example.org/go/version/2025-10> ;
+    evo:definition "An instance of double-strand break repair via nonhomologous end joining that requires a number of factors important for V(D)J recombination, including the KU70/80 heterodimer (KU), XRCC4, ligase IV, and DNA-PKcs in mammals. It does not produce translocations (as opposed to the alternative nonhomologous end joining)."@en ;
+    evo:hasParent <http://example.org/evolution/term/GO_0006303/2025-10> ;
+    evo:isDeprecated false ;
+    evo:label "double-strand break repair via classical nonhomologous end joining"@en ;
+    evo:termID "GO:0097680"^^xsd:string .
+
+<http://example.org/evolution/term/GO_0097681/2025-10> a evo:TermVersion ;
+    evo:belongsToVersion <http://example.org/go/version/2025-10> ;
+    evo:definition "An instance of double-strand break repair via nonhomologous end joining that is independent of factors important for V(D)J recombination (as opposed to classical nonhomologous end joining). It often results in a deletion with microhomology (i.e. 5-25bp homology) at the repair junction. Among different subclasses of nonhomologous end joining (NHEJ), alternative NHEJ appears to play a significant role in the etiology of mutations that arise during cancer development and treatment."@en ;
+    evo:hasParent <http://example.org/evolution/term/GO_0006303/2025-10> ;
+    evo:isDeprecated false ;
+    evo:label "double-strand break repair via alternative nonhomologous end joining"@en ;
+    evo:termID "GO:0097681"^^xsd:string .
+
+<http://example.org/evolution/term/GO_0097698/2025-10> a evo:TermVersion ;
+    evo:belongsToVersion <http://example.org/go/version/2025-10> ;
+    evo:definition "A telomere maintenance process that occurs by base-excision repair of telomeric DNA in response to DNA damage. Telomeric sequences are particularly susceptible to oxidative DNA damage, due to their G-rich nature."@en ;
+    evo:hasParent <http://example.org/evolution/term/GO_0006284/2025-10>,
+        <http://example.org/evolution/term/GO_0043247/2025-10> ;
+    evo:isDeprecated false ;
+    evo:label "telomere maintenance via base-excision repair"@en ;
+    evo:termID "GO:0097698"^^xsd:string .
+
+<http://example.org/evolution/term/GO_0106300/2025-10> a evo:TermVersion ;
+    evo:belongsToVersion <http://example.org/go/version/2025-10> ;
+    evo:definition "The removal of covalent cross-link between DNA and a protein."@en ;
+    evo:hasParent <http://example.org/evolution/term/GO_0006281/2025-10> ;
+    evo:isDeprecated false ;
+    evo:label "protein-DNA covalent cross-linking repair"@en ;
+    evo:termID "GO:0106300"^^xsd:string .
+
+<http://example.org/evolution/term/GO_0106400/2025-10> a evo:TermVersion ;
+    evo:belongsToVersion <http://example.org/go/version/2025-10> ;
+    evo:definition "A mechanism of homologous recombination and DNA repair in which transcript RNA is used as a template for DSB repair."@en ;
+    evo:hasParent <http://example.org/evolution/term/GO_0000724/2025-10> ;
+    evo:isDeprecated false ;
+    evo:label "double-strand break repair via transcription-associated homologous recombination"@en ;
+    evo:termID "GO:0106400"^^xsd:string .
+
+<http://example.org/evolution/term/GO_0141168/2025-10> a evo:TermVersion ;
+    evo:belongsToVersion <http://example.org/go/version/2025-10> ;
+    evo:definition "An epigenetic cytosine DNA demethylation pathway that includes a deamination step to produce either a thymine (T), or a 5-hydroxymethyluracil (5hmU), if the 5meC had first been converted to 5hmC. A DNA glycosylase (e. g. TDG) recognizes the T mispaired with a G or the 5hmC and excises the modified base to initiate its replacement with unmethylated cytosine through base excision repair."@en ;
+    evo:hasParent <http://example.org/evolution/term/GO_0006281/2025-10>,
+        <http://example.org/evolution/term/GO_0141166/2025-10> ;
+    evo:isDeprecated false ;
+    evo:label "chromosomal 5-methylcytosine DNA demethylation, oxidative deamination pathway"@en ;
+    evo:termID "GO:0141168"^^xsd:string .
+
+<http://example.org/evolution/term/GO_1901255/2025-10> a evo:TermVersion ;
+    evo:belongsToVersion <http://example.org/go/version/2025-10> ;
+    evo:definition "Any nucleotide-excision repair that is involved in interstrand cross-link repair."@en ;
+    evo:hasParent <http://example.org/evolution/term/GO_0006289/2025-10> ;
+    evo:isDeprecated false ;
+    evo:label "nucleotide-excision repair involved in interstrand cross-link repair"@en ;
+    evo:termID "GO:1901255"^^xsd:string ;
+    go:BFO_0000050 <http://example.org/evolution/term/GO_0036297/2025-10> .
+
+<http://example.org/evolution/term/GO_1903823/2025-10> a evo:TermVersion ;
+    evo:belongsToVersion <http://example.org/go/version/2025-10> ;
+    evo:definition "Single strand break repair that takes place in a telomere."@en ;
+    evo:hasParent <http://example.org/evolution/term/GO_0000012/2025-10> ;
+    evo:isDeprecated false ;
+    evo:label "telomere single strand break repair"@en ;
+    evo:termID "GO:1903823"^^xsd:string .
+
+<http://example.org/evolution/term/GO_1990396/2025-10> a evo:TermVersion ;
+    evo:belongsToVersion <http://example.org/go/version/2025-10> ;
+    evo:definition "The error-free repair of a single-strand break in DNA in which the broken DNA molecule is repaired using homologous sequences. A strand in the broken DNA searches for a homologous region in an intact chromosome to serve as the template for DNA synthesis. The restoration of two intact DNA molecules results in the exchange, reciprocal or nonreciprocal, of genetic material between the intact DNA molecule and the broken DNA molecule."@en ;
+    evo:hasParent <http://example.org/evolution/term/GO_0000012/2025-10>,
+        <http://example.org/evolution/term/GO_0000725/2025-10>,
+        <http://example.org/evolution/term/GO_0042275/2025-10> ;
+    evo:isDeprecated false ;
+    evo:label "single-strand break repair via homologous recombination"@en ;
+    evo:termID "GO:1990396"^^xsd:string .
+
+<http://example.org/evolution/term/GO_1990414/2025-10> a evo:TermVersion ;
+    evo:belongsToVersion <http://example.org/go/version/2025-10> ;
+    evo:definition "The repair of a replication-born double-strand DNA break in which the DNA molecule is repaired using the homologous sequence of the sister chromatid which serves as a template to repair the breaks."@en ;
+    evo:hasParent <http://example.org/evolution/term/GO_0000724/2025-10> ;
+    evo:isDeprecated false ;
+    evo:label "replication-born double-strand break repair via sister chromatid exchange"@en ;
+    evo:termID "GO:1990414"^^xsd:string .
+
+<http://example.org/evolution/term/GO_1990516/2025-10> a evo:TermVersion ;
+    evo:belongsToVersion <http://example.org/go/version/2025-10> ;
+    evo:definition "The pathway by which a ribonucleotide is removed from DNA and replaced by a deoxyribonucleotide. The ribonucleotide is incised by RNase H2, and further excised by an endonuclease. The resulting 1 nt gap is then repaired by DNA polymerase and DNA ligase."@en ;
+    evo:hasParent <http://example.org/evolution/term/GO_0070716/2025-10> ;
+    evo:isDeprecated false ;
+    evo:label "ribonucleotide excision repair"@en ;
+    evo:termID "GO:1990516"^^xsd:string .
+
+<http://example.org/evolution/term/GO_1990918/2025-10> a evo:TermVersion ;
+    evo:belongsToVersion <http://example.org/go/version/2025-10> ;
+    evo:definition "The repair of double-strand breaks in DNA via homologous and nonhomologous mechanisms to reform a continuous DNA helix that contributes to reciprocal meiotic recombination."@en ;
+    evo:hasParent <http://example.org/evolution/term/GO_0006302/2025-10>,
+        <http://example.org/evolution/term/GO_1903046/2025-10> ;
+    evo:isDeprecated false ;
+    evo:label "double-strand break repair involved in meiotic recombination"@en ;
+    evo:termID "GO:1990918"^^xsd:string ;
+    go:BFO_0000050 <http://example.org/evolution/term/GO_0007131/2025-10> .
+
+<http://example.org/evolution/term/GO_0006284/2025-10> a evo:TermVersion ;
+    evo:belongsToVersion <http://example.org/go/version/2025-10> ;
+    evo:definition "In base excision repair, an altered base is removed by a DNA glycosylase enzyme, followed by excision of the resulting sugar phosphate. The small gap left in the DNA helix is filled in by the sequential action of DNA polymerase and DNA ligase."@en ;
+    evo:hasParent <http://example.org/evolution/term/GO_0006281/2025-10> ;
+    evo:isDeprecated false ;
+    evo:label "base-excision repair"@en ;
+    evo:termID "GO:0006284"^^xsd:string .
+
+<http://example.org/evolution/term/GO_0070716/2025-10> a evo:TermVersion ;
+    evo:belongsToVersion <http://example.org/go/version/2025-10> ;
+    evo:definition "A mismatch repair process that corrects errors introduced that ensures the accuracy of DNA replication."@en ;
+    evo:hasParent <http://example.org/evolution/term/GO_0006298/2025-10> ;
+    evo:isDeprecated false ;
+    evo:label "mismatch repair involved in maintenance of fidelity involved in DNA-dependent DNA replication"@en ;
+    evo:termID "GO:0070716"^^xsd:string ;
+    go:BFO_0000050 <http://example.org/evolution/term/GO_0045005/2025-10> .
+
+<http://example.org/evolution/term/GO_0097551/2025-10> a evo:TermVersion ;
+    evo:belongsToVersion <http://example.org/go/version/2025-10> ;
+    evo:definition "The repair of double-strand breaks in mitochondrial DNA via homologous and nonhomologous mechanisms to reform a continuous DNA helix."@en ;
+    evo:hasParent <http://example.org/evolution/term/GO_0006302/2025-10> ;
+    evo:isDeprecated false ;
+    evo:label "mitochondrial double-strand break repair"@en ;
+    evo:termID "GO:0097551"^^xsd:string .
+
+<http://example.org/evolution/term/GO_0000012/2025-10> a evo:TermVersion ;
+    evo:belongsToVersion <http://example.org/go/version/2025-10> ;
+    evo:definition "The repair of single strand breaks in DNA. Repair of such breaks is mediated by the same enzyme systems as are used in base excision repair."@en ;
+    evo:hasParent <http://example.org/evolution/term/GO_0006281/2025-10> ;
+    evo:isDeprecated false ;
+    evo:label "single strand break repair"@en ;
+    evo:termID "GO:0000012"^^xsd:string .
+
+<http://example.org/evolution/term/GO_0000710/2025-10> a evo:TermVersion ;
+    evo:belongsToVersion <http://example.org/go/version/2025-10> ;
+    evo:definition "A system for the identification and correction of base-base mismatches, small insertion-deletion loops, and regions of heterology that are present in duplex DNA formed with strands from two recombining molecules. Correction of the mismatch can result in non-Mendelian segregation of alleles following meiosis."@en ;
+    evo:hasParent <http://example.org/evolution/term/GO_0006298/2025-10>,
+        <http://example.org/evolution/term/GO_0061982/2025-10> ;
+    evo:isDeprecated false ;
+    evo:label "meiotic mismatch repair"@en ;
+    evo:termID "GO:0000710"^^xsd:string .
+
+<http://example.org/evolution/term/GO_0006290/2025-10> a evo:TermVersion ;
+    evo:belongsToVersion <http://example.org/go/version/2025-10> ;
+    evo:definition "The repair of UV-induced T-T, C-T and C-C dimers."@en ;
+    evo:hasParent <http://example.org/evolution/term/GO_0006281/2025-10> ;
+    evo:isDeprecated false ;
+    evo:label "pyrimidine dimer repair"@en ;
+    evo:termID "GO:0006290"^^xsd:string .
+
+<http://example.org/evolution/term/GO_0006298/2025-10> a evo:TermVersion ;
+    evo:belongsToVersion <http://example.org/go/version/2025-10> ;
+    evo:definition "A system for the correction of errors in which an incorrect base, which cannot form hydrogen bonds with the corresponding base in the parent strand, is incorporated into the daughter strand. The mismatch repair system promotes genomic fidelity by repairing base-base mismatches, insertion-deletion loops and heterologies generated during DNA replication and recombination."@en ;
+    evo:hasParent <http://example.org/evolution/term/GO_0006281/2025-10> ;
+    evo:isDeprecated false ;
+    evo:label "mismatch repair"@en ;
+    evo:termID "GO:0006298"^^xsd:string .
+
+<http://example.org/evolution/term/GO_0006303/2025-10> a evo:TermVersion ;
+    evo:belongsToVersion <http://example.org/go/version/2025-10> ;
+    evo:definition "The repair of a double-strand break in DNA in which the two broken ends are rejoined with little or no sequence complementarity. Information at the DNA ends may be lost due to the modification of broken DNA ends. This term covers instances of separate pathways, called classical (or canonical) and alternative nonhomologous end joining (C-NHEJ and A-NHEJ). These in turn may further branch into sub-pathways, but evidence is still unclear."@en ;
+    evo:hasParent <http://example.org/evolution/term/GO_0006302/2025-10> ;
+    evo:isDeprecated false ;
+    evo:label "double-strand break repair via nonhomologous end joining"@en ;
+    evo:termID "GO:0006303"^^xsd:string .
+
+<http://example.org/evolution/term/GO_0036297/2025-10> a evo:TermVersion ;
+    evo:belongsToVersion <http://example.org/go/version/2025-10> ;
+    evo:definition "Removal of a DNA interstrand crosslink (a covalent attachment of DNA bases on opposite strands of the DNA) and restoration of the DNA. DNA interstrand crosslinks occur when both strands of duplex DNA are covalently tethered together (e.g. by an exogenous or endogenous agent), thus preventing the strand unwinding necessary for essential DNA functions such as transcription and replication."@en ;
+    evo:hasParent <http://example.org/evolution/term/GO_0006281/2025-10> ;
+    evo:isDeprecated false ;
+    evo:label "interstrand cross-link repair"@en ;
+    evo:termID "GO:0036297"^^xsd:string .
+
+<http://example.org/evolution/term/GO_0000724/2025-10> a evo:TermVersion ;
+    evo:belongsToVersion <http://example.org/go/version/2025-10> ;
+    evo:definition "The error-free repair of a double-strand break in DNA in which the broken DNA molecule is repaired using homologous sequences. A strand in the broken DNA searches for a homologous region in an intact chromosome to serve as the template for DNA synthesis. The restoration of two intact DNA molecules results in the exchange, reciprocal or nonreciprocal, of genetic material between the intact DNA molecule and the broken DNA molecule."@en ;
+    evo:hasParent <http://example.org/evolution/term/GO_0000725/2025-10>,
+        <http://example.org/evolution/term/GO_0006302/2025-10> ;
+    evo:isDeprecated false ;
+    evo:label "double-strand break repair via homologous recombination"@en ;
+    evo:termID "GO:0000724"^^xsd:string .
+
+<http://example.org/evolution/term/GO_0000725/2025-10> a evo:TermVersion ;
+    evo:belongsToVersion <http://example.org/go/version/2025-10> ;
+    evo:definition "A DNA repair process that involves the exchange, reciprocal or nonreciprocal, of genetic material between the broken DNA molecule and a homologous DNA region."@en ;
+    evo:hasParent <http://example.org/evolution/term/GO_0006281/2025-10>,
+        <http://example.org/evolution/term/GO_0006310/2025-10> ;
+    evo:isDeprecated false ;
+    evo:label "recombinational repair"@en ;
+    evo:termID "GO:0000725"^^xsd:string .
+
+<http://example.org/evolution/term/GO_0006289/2025-10> a evo:TermVersion ;
+    evo:belongsToVersion <http://example.org/go/version/2025-10> ;
+    evo:definition "A DNA repair process in which a small region of the strand surrounding the damage is removed from the DNA helix as an oligonucleotide. The small gap left in the DNA helix is filled in by the sequential action of DNA polymerase and DNA ligase. Nucleotide excision repair recognizes a wide range of substrates, including damage caused by UV irradiation (pyrimidine dimers and 6-4 photoproducts) and chemicals (intrastrand cross-links and bulky adducts)."@en ;
+    evo:hasParent <http://example.org/evolution/term/GO_0006281/2025-10> ;
+    evo:isDeprecated false ;
+    evo:label "nucleotide-excision repair"@en ;
+    evo:termID "GO:0006289"^^xsd:string .
+
+<http://example.org/evolution/term/GO_0006302/2025-10> a evo:TermVersion ;
+    evo:belongsToVersion <http://example.org/go/version/2025-10> ;
+    evo:definition "The repair of double-strand breaks in DNA via homologous and nonhomologous mechanisms to reform a continuous DNA helix."@en ;
+    evo:hasParent <http://example.org/evolution/term/GO_0006281/2025-10> ;
+    evo:isDeprecated false ;
+    evo:label "double-strand break repair"@en ;
+    evo:termID "GO:0006302"^^xsd:string .
+
+<http://example.org/evolution/term/GO_0006281/2025-10> a evo:TermVersion ;
+    evo:belongsToVersion <http://example.org/go/version/2025-10> ;
+    evo:definition "The process of restoring DNA after damage. Genomes are subject to damage by chemical and physical agents in the environment (e.g. UV and ionizing radiations, chemical mutagens, fungal and bacterial toxins, etc.) and by free radicals or alkylating agents endogenously generated in metabolism. DNA is also damaged because of errors during its replication. A variety of different DNA repair pathways have been reported that include direct reversal, base excision repair, nucleotide excision repair, photoreactivation, bypass, double-strand break repair pathway, and mismatch repair pathway."@en ;
+    evo:hasParent <http://example.org/evolution/term/GO_0006259/2025-10>,
+        <http://example.org/evolution/term/GO_0006974/2025-10> ;
+    evo:isDeprecated false ;
+    evo:label "DNA repair"@en ;
+    evo:termID "GO:0006281"^^xsd:string .
+
+<http://example.org/go/version/2025-10> a evo:OntologyVersion ;
+    evo:versionDate "2025-10-01"^^xsd:date .
+
