@@ -5,7 +5,9 @@
   "description": "Affiche l'évolution des termes Gene Ontology (QuickGO, AmiGO, OLS)",
   "permissions": [
     "storage",
-    "activeTab",
+    "activeTab"
+  ],
+  "host_permissions": [
     "*://www.ebi.ac.uk/QuickGO/*",
     "*://amigo.geneontology.org/*",
     "*://www.ebi.ac.uk/ols/*",
