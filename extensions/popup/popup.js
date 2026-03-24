@@ -113,6 +113,11 @@ function setApiBadge(el, ok) {
 async function loadStats(apiUrl, domainId, statsEl, apiBadgeEl) {
   setApiBadge(apiBadgeEl, null);
   try {
+
+    if(!domainId.startsWith("GO:")) {
+      domainId = "GO:" + domainId;
+    }
+
     const resp = await fetch(`${apiUrl}/api/domain/${encodeURIComponent(domainId)}/stats`);
     if (resp.ok) {
       const s = await resp.json();
