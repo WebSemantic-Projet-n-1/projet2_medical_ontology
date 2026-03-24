@@ -41,5 +41,5 @@ docker compose build reasoner
 docker compose run --rm reasoner
 ```
 
-L'image embarque Java 25 et lance la JVM avec `**-Xmx4000M**` (4 Go de heap).
+L'image embarque Java 25 et lance la JVM avec `-Xmx4000M` (4 Go de heap).
 Prend environ 2 minutes par dataset.
