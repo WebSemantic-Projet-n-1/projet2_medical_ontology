@@ -57,10 +57,7 @@ projet2_medical_ontology/
 - **Docker** : recommandé pour exécuter le raisonneur OWL (HermiT/Pellet) via l'image fournie ; sinon, installer Java 25 localement.
 - **Optionnel** : Docker pour triplestore (Jena Fuseki ou GraphDB).
 
-
-### 3.2 Environnement virtuel (venv) – CUDA en priorité, puis CPU
-
-Le projet utilise un **venv local**. On installe **d'abord PyTorch avec CUDA** ; si l'installation échoue ou si aucun GPU n'est disponible, on bascule sur **PyTorch CPU**.
+### 3.2 Environnement virtuel (venv)
 
 **Linux / macOS :**
 
@@ -117,13 +114,12 @@ Les fichiers de données Gene Ontology ne sont **pas** versionnés dans le dép�
 
 ### 5.1 Téléchargement des archives Zenodo
 
-1. **Version octobre 2025**  
-   - Aller sur la page Zenodo : `https://zenodo.org/records/17382285`.  
-   - Télécharger l'archive.
-
-2. **Version janvier 2026**  
-   - Aller sur la page Zenodo : `https://zenodo.org/records/18422732`
-   - Télécharger l'archive.
+1. **Version octobre 2025**
+  - Aller sur la page Zenodo : `https://zenodo.org/records/17382285`.  
+  - Télécharger l'archive.
+2. **Version janvier 2026**
+  - Aller sur la page Zenodo : `https://zenodo.org/records/18422732`
+  - Télécharger l'archive.
 
 Placez ces deux fichiers `.tgz` dans un dossier temporaire (ou directement dans `data/` si vous préférez).
 
@@ -187,7 +183,7 @@ Ces chemins correspondent à ceux utilisés par les scripts d'analyse (par exemp
 
 ## 6. Raisonneur OWL via Docker
 
-Le script `analyse/reasoner_analysis.py` tourne via Docker. L'image embarque **Java 25** et la JVM est configurée avec **`-Xmx4000M`** (4 Go de heap), en cohérence avec `analyse/reasoner_config.ini`, ce qui est suffisant pour raisonner sur GO (~52k classes) avec HermiT et Pellet dans le contexte du projet.
+Le script `analyse/reasoner_analysis.py` tourne via Docker. L'image embarque **Java 25** et la JVM est configurée avec `**-Xmx4000M`** (4 Go de heap), en cohérence avec `analyse/reasoner_config.ini`, ce qui est suffisant pour raisonner sur GO (~52k classes) avec HermiT et Pellet dans le contexte du projet.
 
 > **Docker Desktop** : allouez au moins **6 Go** au moteur Docker
 > (Settings → Resources → Memory) pour que le conteneur dispose d'environ 4 Go pour la JVM, en tenant compte de l'overhead du système.
@@ -222,12 +218,13 @@ Les résultats sont affichés dans la sortie standard du conteneur (logs Docker)
 
 ## 9. Références
 
-- Gene Ontology : <https://geneontology.org/docs/>
-- OWL 2 : <https://www.w3.org/TR/owl2-overview/>
-- SPARQL 1.1 : <https://www.w3.org/TR/sparql11-query/>
-- WebExtensions : <https://developer.mozilla.org/fr/docs/Mozilla/Add-ons/WebExtensions>
-- rdflib : <https://rdflib.readthedocs.io/>
-- owlready2 : <https://owlready2.readthedocs.io/>
-- PyTorch (CUDA / CPU) : <https://pytorch.org/get-started/locally/>
-- Apache Jena Fuseki : <https://jena.apache.org/documentation/fuseki2/>
-- GraphDB : <https://graphdb.ontotext.com/>
+- Gene Ontology : [https://geneontology.org/docs/](https://geneontology.org/docs/)
+- OWL 2 : [https://www.w3.org/TR/owl2-overview/](https://www.w3.org/TR/owl2-overview/)
+- SPARQL 1.1 : [https://www.w3.org/TR/sparql11-query/](https://www.w3.org/TR/sparql11-query/)
+- WebExtensions : [https://developer.mozilla.org/fr/docs/Mozilla/Add-ons/WebExtensions](https://developer.mozilla.org/fr/docs/Mozilla/Add-ons/WebExtensions)
+- rdflib : [https://rdflib.readthedocs.io/](https://rdflib.readthedocs.io/)
+- owlready2 : [https://owlready2.readthedocs.io/](https://owlready2.readthedocs.io/)
+- PyTorch (CUDA / CPU) : [https://pytorch.org/get-started/locally/](https://pytorch.org/get-started/locally/)
+- Apache Jena Fuseki : [https://jena.apache.org/documentation/fuseki2/](https://jena.apache.org/documentation/fuseki2/)
+- GraphDB : [https://graphdb.ontotext.com/](https://graphdb.ontotext.com/)
+
