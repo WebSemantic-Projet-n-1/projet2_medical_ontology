@@ -113,6 +113,27 @@ function setApiBadge(el, ok) {
 async function loadStats(apiUrl, domainId, statsEl, apiBadgeEl) {
   setApiBadge(apiBadgeEl, null);
   try {
+    // Normalisation de l'identifiant de domaine : trim + validation.
+    domainId = (domainId ?? "").trim();
+    if (!domainId) {
+      statsEl.textContent = "Identifiant de domaine manquant";
+      setApiBadge(apiBadgeEl, false);
+      return;
+    }
+
+    const GO_FULL_PATTERN = /^GO:\d{7}$/;
+    const GO_BARE_PATTERN = /^\d{7}$/;
+
+    if (GO_BARE_PATTERN.test(domainId)) {
+      // Ajout du préfixe si besoin (ex. "0006281" -> "GO:0006281").
+      domainId = "GO:" + domainId;
+    } else if (!GO_FULL_PATTERN.test(domainId)) {
+      // Valeur invalide (ni "GO:xxxxxxx" ni "xxxxxxx").
+      statsEl.textContent = "Identifiant de domaine invalide";
+      setApiBadge(apiBadgeEl, false);
+      return;
+    }
+
     const resp = await fetch(`${apiUrl}/api/domain/${encodeURIComponent(domainId)}/stats`);
     if (resp.ok) {
       const s = await resp.json();

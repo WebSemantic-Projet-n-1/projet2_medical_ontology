@@ -6,6 +6,7 @@
 # --- Partie 1 : Analyse des ontologies GO ---
 rdflib>=7.0.0
 owlready2>=0.47
+pandas>=2.0.0
 
 # --- Utilitaires ---
 SPARQLWrapper>=2.0.0
