@@ -79,13 +79,18 @@ async function setCached(goId, data, apiUrl) {
 // ---------------------------------------------------------------------------
 
 async function fetchTermDiff(goId, tabId) {
-  const settings = await ext.storage.local.get(["apiUrl"]);
+  const settings = await ext.storage.local.get(["apiUrl", "cacheEnabled"]);
   const apiUrl = settings.apiUrl || "http://localhost:8000";
+  const cacheEnabled = settings.cacheEnabled !== false;
 
-  const cached = await getCached(goId, apiUrl);
-  if (cached) {
-    setTabIcon(tabId, "green");
-    return cached;
+  if (cacheEnabled) {
+    const cached = await getCached(goId, apiUrl);
+    if (cached) {
+      setTabIcon(tabId, "green");
+      return cached;
+    }
+  } else {
+    LOG(`cache DISABLED for ${goId}`);
   }
 
   setTabIcon(tabId, "yellow");
@@ -107,7 +112,9 @@ async function fetchTermDiff(goId, tabId) {
   }
 
   const data = await resp.json();
-  await setCached(goId, data, apiUrl);
+  if (cacheEnabled) {
+    await setCached(goId, data, apiUrl);
+  }
 
   setTabIcon(tabId, "green");
   return data;

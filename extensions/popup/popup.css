@@ -130,6 +130,26 @@ input[type="text"]:focus {
   min-width: 0;
 }
 
+/* ===== Cache toggle row ===== */
+
+.toggle-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.toggle-row label {
+  margin-bottom: 0;
+}
+
+.toggle-row input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  accent-color: #6366f1;
+  cursor: pointer;
+}
+
 /* ===== Stats line ===== */
 
 .stats-line {
