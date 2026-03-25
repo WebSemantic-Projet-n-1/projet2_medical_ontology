@@ -63,11 +63,13 @@ function storageRemove(keys) {
 const DEFAULTS = {
   domain: "0006281",
   apiUrl: "http://localhost:8000",
+  cacheEnabled: true,
 };
 
 document.addEventListener("DOMContentLoaded", async () => {
   const domainEl      = document.getElementById("domain");
   const apiUrlEl      = document.getElementById("apiUrl");
+  const cacheEnabledEl = document.getElementById("cacheEnabled");
   const saveBtn       = document.getElementById("save");
   const clearCacheBtn = document.getElementById("clearCache");
   const statsEl       = document.getElementById("stats");
@@ -76,6 +78,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   const stored = await storageGet(Object.keys(DEFAULTS));
   domainEl.value = stored.domain  || DEFAULTS.domain;
   apiUrlEl.value = stored.apiUrl  || DEFAULTS.apiUrl;
+  cacheEnabledEl.checked = stored.cacheEnabled ?? DEFAULTS.cacheEnabled;
 
   loadStats(stored.apiUrl || DEFAULTS.apiUrl, domainEl.value, statsEl, apiBadgeEl);
 
@@ -83,6 +86,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     await storageSet({
       domain: domainEl.value,
       apiUrl: apiUrlEl.value,
+      cacheEnabled: cacheEnabledEl.checked,
     });
     loadStats(apiUrlEl.value, domainEl.value, statsEl, apiBadgeEl);
   });
