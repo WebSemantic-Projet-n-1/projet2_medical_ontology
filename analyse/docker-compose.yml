@@ -7,5 +7,5 @@ services:
       # Données OWL Gene Ontology
       - ../data:/app/data:ro
       # Résultats (JSON, Markdown)
-      - ./result:/app/analyse/result
+      - ./results:/app/analyse/results
 

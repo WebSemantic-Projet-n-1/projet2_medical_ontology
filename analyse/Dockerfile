@@ -22,9 +22,9 @@ COPY analyse/ ./analyse/
 
 # Volumes :
 # - /app/data            → fichiers OWL Gene Ontology (lecture seule)
-# - /app/analyse/result  → rapports produits par le script (écriture)
+# - /app/analyse/results → rapports produits par le script (écriture)
 VOLUME ["/app/data"]
-VOLUME ["/app/analyse/result"]
+VOLUME ["/app/analyse/results"]
 
 CMD ["python", "analyse/reasoner_analysis.py"]
 

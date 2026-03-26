@@ -19,13 +19,38 @@ from pyvis.network import Network
 from load_ontologies import GO_NS
 
 
+# ---- Colors (centralized) -------------------------------------------------
+COLOR_DOMAIN_DNA_REPAIR = "#f05e56"
+COLOR_DOMAIN_LIPID_METABOLISM = "#4575b4"
+COLOR_DOMAIN_APOPTOSIS = "#1a9850"
+COLOR_DOMAIN_DEFAULT = "#4c78a8"
+COLOR_OVERLAP = "#7b3294"
+COLOR_CONTEXT = "#bdbdbd"
+
+COLOR_STATUS_NEW = "#fdb863"
+COLOR_STATUS_HIERARCHY_CHANGED = "#f04695"
+COLOR_TRANSPARENT = "rgba(0,0,0,0)"
+
+COLOR_CHART_SECONDARY = "#d9d9d9"
+COLOR_CHART_BAR_OLD = "#8da0cb"
+COLOR_CHART_BAR_NEW = "#fc8d62"
+COLOR_WHITE = "#ffffff"
+
+COLOR_NET_FONT = "#202020"
+COLOR_NET_EDGE = "#c7c7c7"
+COLOR_LEGEND_BORDER = "#d7d7d7"
+COLOR_LEGEND_TEXT = "#1f1f1f"
+COLOR_LEGEND_MUTED = "#505050"
+COLOR_LEGEND_DOT_BORDER = "#cfcfcf"
+COLOR_LEGEND_SHADOW = "rgba(0, 0, 0, 0.12)"
+COLOR_LEGEND_BG = "rgba(255, 255, 255, 0.97)"
+
+
 DOMAIN_INFO: Mapping[str, Mapping[str, str]] = {
-    "GO:0006281": {"label": "DNA repair", "color": "#f05e56"},
-    "GO:0006629": {"label": "Lipid metabolism", "color": "#4575b4"},
-    "GO:0012501": {"label": "Apoptosis", "color": "#1a9850"},
+    "GO:0006281": {"label": "DNA repair", "color": COLOR_DOMAIN_DNA_REPAIR},
+    "GO:0006629": {"label": "Lipid metabolism", "color": COLOR_DOMAIN_LIPID_METABOLISM},
+    "GO:0012501": {"label": "Apoptosis", "color": COLOR_DOMAIN_APOPTOSIS},
 }
-OVERLAP_COLOR = "#7b3294"
-CONTEXT_COLOR = "#bdbdbd"
 ROOT_GO_ID = "GO:0008150"
 LAYOUT_RANDOM_SEED = 42
 
@@ -196,8 +221,8 @@ def make_macro_summary(onto_old, onto_new, domain_roots: Sequence[str]) -> Dict[
         radius=1.0,
         startangle=90,
         counterclock=False,
-        colors=["#4c78a8", "#d9d9d9"],
-        wedgeprops={"width": 0.28, "edgecolor": "white"},
+        colors=[COLOR_DOMAIN_DEFAULT, COLOR_CHART_SECONDARY],
+        wedgeprops={"width": 0.28, "edgecolor": COLOR_WHITE},
     )
     ax_scope.pie(
         [
@@ -207,8 +232,8 @@ def make_macro_summary(onto_old, onto_new, domain_roots: Sequence[str]) -> Dict[
         radius=0.68,
         startangle=90,
         counterclock=False,
-        colors=["#4c78a8", "#d9d9d9"],
-        wedgeprops={"width": 0.28, "edgecolor": "white"},
+        colors=[COLOR_DOMAIN_DEFAULT, COLOR_CHART_SECONDARY],
+        wedgeprops={"width": 0.28, "edgecolor": COLOR_WHITE},
     )
     ax_scope.set_title("Vue macro - couverture globale de GO")
     ax_scope.text(
@@ -240,7 +265,7 @@ def make_macro_summary(onto_old, onto_new, domain_roots: Sequence[str]) -> Dict[
 
     ax_domains = axes[1]
     pivot = df_domains.pivot(index="domaine", columns="version", values="nb_classes")
-    colors = ["#8da0cb", "#fc8d62"]
+    colors = [COLOR_CHART_BAR_OLD, COLOR_CHART_BAR_NEW]
     pivot.plot(kind="bar", ax=ax_domains, color=colors, width=0.75)
     ax_domains.set_title("Vue macro - taille des 3 sous-domaines")
     ax_domains.set_ylabel("Nombre de classes")
@@ -262,10 +287,10 @@ def make_macro_summary(onto_old, onto_new, domain_roots: Sequence[str]) -> Dict[
 
 def _border_style(status: str) -> Tuple[str, float]:
     if status == "new":
-        return "#fdb863", 2.8
+        return COLOR_STATUS_NEW, 2.8
     if status == "hierarchy_changed":
-        return "#e66101", 2.4
-    return "rgba(0,0,0,0)", 0.0
+        return COLOR_STATUS_HIERARCHY_CHANGED, 2.4
+    return COLOR_TRANSPARENT, 0.0
 
 
 def _collect_ancestor_context(index: Mapping[str, object], start_iris: Iterable[str], stop_iri: str | None) -> Set[str]:
@@ -297,10 +322,10 @@ def _domain_memberships(scope_summary: Mapping[str, object], iri: str) -> Tuple[
 
 def _fill_color(domain_roots: Tuple[str, ...]) -> str:
     if not domain_roots:
-        return CONTEXT_COLOR
+        return COLOR_CONTEXT
     if len(domain_roots) > 1:
-        return OVERLAP_COLOR
-    return DOMAIN_INFO.get(domain_roots[0], {}).get("color", "#4c78a8")
+        return COLOR_OVERLAP
+    return DOMAIN_INFO.get(domain_roots[0], {}).get("color", COLOR_DOMAIN_DEFAULT)
 
 
 def _build_network_graph(
@@ -391,68 +416,68 @@ def _add_network_nodes(
 
 
 def _legend_html() -> str:
-    return """
+    return f"""
 <style>
-#go-legend {
+#go-legend {{
   position: fixed;
   top: 16px;
   right: 16px;
   z-index: 9999;
-  background: rgba(255, 255, 255, 0.97);
-  border: 1px solid #d7d7d7;
+  background: {COLOR_LEGEND_BG};
+  border: 1px solid {COLOR_LEGEND_BORDER};
   border-radius: 12px;
   padding: 12px 14px;
   width: 320px;
-  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.12);
+  box-shadow: 0 6px 24px {COLOR_LEGEND_SHADOW};
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   font-size: 13px;
-  color: #1f1f1f;
-}
-#go-legend h3 {
+  color: {COLOR_LEGEND_TEXT};
+}}
+#go-legend h3 {{
   margin: 0 0 8px 0;
   font-size: 14px;
-}
-#go-legend .group-title {
+}}
+#go-legend .group-title {{
   margin: 10px 0 6px 0;
   font-weight: 600;
   font-size: 12px;
   text-transform: uppercase;
-  color: #505050;
-}
-#go-legend .item {
+  color: {COLOR_LEGEND_MUTED};
+}}
+#go-legend .item {{
   display: flex;
   align-items: center;
   gap: 8px;
   margin: 4px 0;
-}
-#go-legend .dot {
+}}
+#go-legend .dot {{
   width: 12px;
   height: 12px;
   border-radius: 50%;
-  border: 1px solid #cfcfcf;
+  border: 1px solid {COLOR_LEGEND_DOT_BORDER};
   flex: 0 0 12px;
-}
-#go-legend .ring {
+}}
+#go-legend .ring {{
   width: 12px;
   height: 12px;
   border-radius: 50%;
-  background: #ffffff;
+  background: {COLOR_WHITE};
   flex: 0 0 12px;
-}
+}}
 </style>
 <div id="go-legend">
   <h3><b>Légende</b></h3>
   <div class="group-title">Sous-domaines</div>
-  <div class="item"><span class="dot" style="background:#d73027"></span>DNA repair</div>
-  <div class="item"><span class="dot" style="background:#4575b4"></span>Lipid metabolism</div>
-  <div class="item"><span class="dot" style="background:#1a9850"></span>Apoptosis</div>
-  <div class="item"><span class="dot" style="background:#7b3294"></span>Chevauchement entre sous-domaines</div>
-  <div class="item"><span class="dot" style="background:#bdbdbd"></span>Contexte hors portée directe</div>
+  <div class="item"><span class="dot" style="background:{COLOR_DOMAIN_DNA_REPAIR}"></span>DNA repair</div>
+  <div class="item"><span class="dot" style="background:{COLOR_DOMAIN_LIPID_METABOLISM}"></span>Lipid metabolism</div>
+  <div class="item"><span class="dot" style="background:{COLOR_DOMAIN_APOPTOSIS}"></span>Apoptosis</div>
+  <div class="item"><span class="dot" style="background:{COLOR_OVERLAP}"></span>Chevauchement entre sous-domaines</div>
+  <div class="item"><span class="dot" style="background:{COLOR_CONTEXT}"></span>Contexte hors portée directe</div>
 
   <div class="group-title">Statut</div>
-  <div class="item"><span class="ring" style="border:3px solid #fdb863"></span>Nouveau terme (jan. 2026)</div>
-  <div class="item"><span class="ring" style="border:3px solid #e66101"></span>Hiérarchie modifiée</div>
-  <div class="item"><span class="ring" style="border:1px solid #cfcfcf"></span>Stable / contexte</div>
+  <div class="item"><span class="ring" style="border:3px solid {COLOR_STATUS_NEW}"></span>Nouveau terme (jan. 2026)</div>
+  <div class="item"><span class="ring" style="border:3px solid {COLOR_STATUS_HIERARCHY_CHANGED}"></span>Hiérarchie modifiée</div>
+  <div class="item"><span class="ring" style="border:1px solid {COLOR_LEGEND_DOT_BORDER}"></span>Stable / contexte</div>
 
   <div class="group-title">Forme</div>
   <div class="item">◆ Racine biologique_process (`GO:0008150`)</div>
@@ -503,13 +528,13 @@ def build_interactive_network(
     output_path = Path(output_path)
     output_path.parent.mkdir(parents=True, exist_ok=True)
 
-    net = Network(height="780px", width="100%", directed=True, bgcolor="#ffffff", font_color="#202020")
+    net = Network(height="780px", width="100%", directed=True, bgcolor=COLOR_WHITE, font_color=COLOR_NET_FONT)
     net.barnes_hut(gravity=-2500, central_gravity=0.18, spring_length=140, spring_strength=0.02, damping=0.92)
 
     _add_network_nodes(net, graph, index_new, new_scope, status_map, root_iri, studied_root_iris)
 
     for src, dst in graph.edges:
-        net.add_edge(src, dst, arrows="to", color="#c7c7c7")
+        net.add_edge(src, dst, arrows="to", color=COLOR_NET_EDGE)
 
     net.set_options(
         """
