@@ -17,6 +17,7 @@ ANALYSE_COMPOSE = ROOT / "analyse" / "docker-compose.yml"
 API_COMPOSE = ROOT / "api" / "docker-compose.yml"
 API_DIR = ROOT / "api"
 VENV_DIR = ROOT / ".venv"
+REQUIREMENTS_FILE = ROOT / "requirements.txt"
 
 GO_OWL_NEW = ROOT / "data" / "gene-ontology-01-26" / "data" / "ontology" / "go.owl"
 GO_OWL_OLD = ROOT / "data" / "gene-ontology-10-25" / "data" / "ontology" / "go.owl"
@@ -70,6 +71,23 @@ def ensure_venv() -> None:
     log("Creating .venv ...")
     run_cmd([sys.executable, "-m", "venv", str(VENV_DIR)])
     log(".venv created.")
+
+
+def venv_python() -> Path:
+    if os.name == "nt":
+        return VENV_DIR / "Scripts" / "python.exe"
+    return VENV_DIR / "bin" / "python"
+
+
+def ensure_python_dependencies() -> None:
+    if not REQUIREMENTS_FILE.exists():
+        fail("requirements.txt not found; cannot install Python dependencies.")
+    python_bin = venv_python()
+    if not python_bin.exists():
+        fail(f"Virtual environment Python not found at {python_bin}")
+    log("Installing Python dependencies from requirements.txt ...")
+    run_cmd([str(python_bin), "-m", "pip", "install", "-r", str(REQUIREMENTS_FILE)])
+    log("Python dependencies installed.")
 
 
 def ensure_env_file() -> None:
@@ -219,6 +237,7 @@ def main() -> None:
     check_docker()
     ensure_go_files()
     ensure_venv()
+    ensure_python_dependencies()
 
     if not args.skip_analyse:
         run_analyse_compose()

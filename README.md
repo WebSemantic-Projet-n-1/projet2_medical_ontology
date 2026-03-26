@@ -181,9 +181,18 @@ Ces chemins correspondent à ceux utilisés par les scripts d'analyse (par exemp
 
 ---
 
-## 6. Raisonneur OWL via Docker
+## 6. Utilisation rapide
 
-Le script `analyse/reasoner_analysis.py` tourne via Docker. L'image embarque **Java 25** et la JVM est configurée avec `**-Xmx4000M`** (4 Go de heap), en cohérence avec `analyse/reasoner_config.ini`, ce qui est suffisant pour raisonner sur GO (~52k classes) avec HermiT et Pellet dans le contexte du projet.
+- **Lancement unifié (analyse + API + vérifications)** : depuis la racine, exécuter `python run.py`. Le script vérifie les fichiers GO, crée `.venv` si nécessaire, lance les deux `docker-compose.yml`, crée `api/.env` depuis `api/.env.example` si absent, puis valide l'état des services.
+- **Partie 1 (analyse)** : `load_ontologies.py`, `quantitative_analysis.py` et `qualitative_analysis.py` s'exécutent depuis la racine (voir `analyse/README.md`). Le raisonneur se lance via Docker depuis `analyse/`.
+- **Partie 2 (service web)** : lancer l'API depuis `service-web/` (voir `service-web/README.md`), triplestore devant être démarré (voir `triplestore/README.md`).
+- **Partie 3 (extension)** : charger le dossier `extension-chrome/` (ou `extension-firefox/`) en mode "développement" dans Chrome/Firefox.
+
+---
+
+## 7. Raisonneur OWL via Docker (avancé)
+
+**Dans le cas où l'on ne voudrait lancer que le raisonneur.** Le script `analyse/reasoner_analysis.py` tourne via Docker. L'image embarque **Java 25** et la JVM est configurée avec `**-Xmx4000M`** (4 Go de heap), en cohérence avec `analyse/reasoner_config.ini`, ce qui est suffisant pour raisonner sur GO (~52k classes) avec HermiT et Pellet dans le contexte du projet.
 
 > **Docker Desktop** : allouez au moins **6 Go** au moteur Docker
 > (Settings → Resources → Memory) pour que le conteneur dispose d'environ 4 Go pour la JVM, en tenant compte de l'overhead du système.
@@ -197,14 +206,6 @@ docker compose run --rm reasoner
 ```
 
 Les résultats sont affichés dans la sortie standard du conteneur (logs Docker). Aucun fichier n’est généré dans `analyse/result/reasoner/` par défaut.
-
----
-
-## 7. Utilisation rapide
-
-- **Partie 1 (analyse)** : `load_ontologies.py`, `quantitative_analysis.py` et `qualitative_analysis.py` s'exécutent depuis la racine (voir `analyse/README.md`). Le raisonneur se lance via Docker depuis `analyse/`.
-- **Partie 2 (service web)** : lancer l'API depuis `service-web/` (voir `service-web/README.md`), triplestore devant être démarré (voir `triplestore/README.md`).
-- **Partie 3 (extension)** : charger le dossier `extension-chrome/` (ou `extension-firefox/`) en mode "développement" dans Chrome/Firefox.
 
 ---
 
