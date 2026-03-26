@@ -4,3 +4,6 @@
 
 owlready2>=0.47
 pandas>=2.0.0
+matplotlib>=3.8.0
+networkx>=3.2.0
+pyvis>=0.3.2
