@@ -185,8 +185,8 @@ Ces chemins correspondent à ceux utilisés par les scripts d'analyse (par exemp
 
 - **Lancement unifié (analyse + API + vérifications)** : depuis la racine, exécuter `python run.py`. Le script vérifie les fichiers GO, crée `.venv` si nécessaire, lance les deux `docker-compose.yml`, crée `api/.env` depuis `api/.env.example` si absent, puis valide l'état des services.
 - **Partie 1 (analyse)** : `load_ontologies.py`, `quantitative_analysis.py` et `qualitative_analysis.py` s'exécutent depuis la racine (voir `analyse/README.md`). Le raisonneur se lance via Docker depuis `analyse/`.
-- **Partie 2 (service web)** : lancer l'API depuis `service-web/` (voir `service-web/README.md`), triplestore devant être démarré (voir `triplestore/README.md`).
-- **Partie 3 (extension)** : charger le dossier `extension-chrome/` (ou `extension-firefox/`) en mode "développement" dans Chrome/Firefox.
+- **Partie 2 (service web)** : lancer l'API depuis `api/` (voir `api/README.md`), triplestore devant être démarré (voir `triplestore/README.md`).
+- **Partie 3 (extension)** : charger le dossier `extensions/` en mode "développement" dans Chrome/Firefox.
 
 ---
 
