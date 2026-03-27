@@ -1,7 +1,15 @@
-# Configuration Apache Jena Fuseki — dataset TDB2 persistant
+# Configuration Apache Jena Fuseki — dataset TDB2 persistant avec inférence
 # Dataset name : ds
 # Endpoint SPARQL : http://localhost:3030/ds/query
 # Graph Store    : http://localhost:3030/ds/data
+#
+# Inférence :
+#   Les triplets evo:previousVersion sont générés automatiquement par le
+#   service sparql-inference via un SPARQL UPDATE (materialize_previous_version.ru).
+#   Les règles formelles sont documentées dans inference.rules.
+#   tdb2:unionDefaultGraph expose l'union de tous les graphes nommés comme
+#   graphe par défaut, ce qui permet aux requêtes SPARQL sans clause GRAPH
+#   de traverser toutes les versions et les triplets inférés en même temps.
 
 PREFIX fuseki:  <http://jena.apache.org/fuseki#>
 PREFIX rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
@@ -16,7 +24,7 @@ PREFIX ja:      <http://jena.hpl.hp.com/2005/11/Assembler#>
     fuseki:endpoint [ fuseki:operation fuseki:query  ; fuseki:name "sparql" ] ;
     fuseki:endpoint [ fuseki:operation fuseki:query  ; fuseki:name "query"  ] ;
 
-    # Écriture SPARQL Update
+    # Écriture SPARQL Update (utilisé par le service sparql-inference)
     fuseki:endpoint [ fuseki:operation fuseki:update ; fuseki:name "update" ] ;
 
     # Upload de fichiers RDF
@@ -30,4 +38,8 @@ PREFIX ja:      <http://jena.hpl.hp.com/2005/11/Assembler#>
 
 <#dataset_go> rdf:type tdb2:DatasetTDB2 ;
     # Répertoire de stockage TDB2 dans le volume Docker
-    tdb2:location "/fuseki/databases/ontologies" .
+    tdb2:location "/fuseki/databases/ontologies" ;
+    # Le graphe par défaut est l'union de tous les graphes nommés.
+    # Cela permet aux requêtes SPARQL sans clause GRAPH de voir simultanément
+    # les données sources (2025-10, 2026-01) et les triplets inférés (go/inferred).
+    tdb2:unionDefaultGraph true .

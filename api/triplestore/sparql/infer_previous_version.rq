@@ -1,0 +1,41 @@
+# SPARQL CONSTRUCT — Règle d'inférence : evo:previousVersion
+#
+# Cette requête illustre la règle d'inférence utilisée pour générer
+# automatiquement les liens evo:previousVersion.
+#
+# Logique : deux TermVersion partagent le même evo:termID dans des graphes
+# nommés différents. Celui dont la version est la plus récente (date
+# supérieure) pointe vers l'autre via evo:previousVersion.
+#
+# Peut être exécutée directement sur l'endpoint SPARQL de Fuseki :
+#   GET http://localhost:3030/ds/sparql?query=...
+
+PREFIX evo: <http://example.org/evolution/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+CONSTRUCT {
+    ?termNouveau evo:previousVersion ?termAncien .
+}
+WHERE {
+    # Terme dans la version récente
+    GRAPH ?gNouveau {
+        ?termNouveau a evo:TermVersion ;
+                     evo:termID ?id ;
+                     evo:belongsToVersion ?vNouveau .
+    }
+
+    # Terme dans l'ancienne version avec le même identifiant GO
+    GRAPH ?gAncien {
+        ?termAncien a evo:TermVersion ;
+                    evo:termID ?id ;
+                    evo:belongsToVersion ?vAncien .
+    }
+
+    # Dates de version pour établir la direction du lien (récent → ancien)
+    ?vNouveau evo:versionDate ?dateNouveau .
+    ?vAncien  evo:versionDate ?dateAncien  .
+
+    # Contraintes : deux graphes différents, et la version nouvelle est postérieure
+    FILTER ( ?gNouveau != ?gAncien )
+    FILTER ( ?dateNouveau > ?dateAncien )
+}

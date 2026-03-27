@@ -30,7 +30,8 @@ GRAPH_NEW="http://purl.obolibrary.org/obo/go/version/2026-01"
 FILE_OLD="${DATA_DIR}/${GRAPH_OLD_DIR}/go.owl"
 FILE_NEW="${DATA_DIR}/${GRAPH_NEW_DIR}/go.owl"
 
-MARKER="/fuseki/.data-loaded"
+MARKER_DIR="${MARKER_DIR:-/marker}"
+MARKER="${MARKER_DIR}/.data-loaded"
 
 # ── Idempotence ──────────────────────────────────────────────────────────────
 if [ -f "$MARKER" ]; then
@@ -83,5 +84,8 @@ load_graph "$FILE_OLD" "$GRAPH_OLD" "version 2025-10"
 load_graph "$FILE_NEW" "$GRAPH_NEW" "version 2026-01"
 
 # ── Marqueur d'idempotence ────────────────────────────────────────────────────
-touch "$MARKER"
-echo "[loader] Chargement terminé. Marqueur créé : $MARKER"
+if touch "$MARKER" 2>/dev/null; then
+    echo "[loader] Chargement terminé. Marqueur créé : $MARKER"
+else
+    echo "[loader] WARNING: impossible d'écrire le marqueur ($MARKER). Chargement terminé quand même."
+fi
