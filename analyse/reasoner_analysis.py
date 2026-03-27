@@ -13,11 +13,13 @@ Prérequis
 """
 
 import configparser
+import json
 import re
 import shutil
 import subprocess
 import sys
 import time
+import argparse
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
@@ -43,6 +45,12 @@ DOMAIN_LABEL = "DNA repair"
 
 REASONERS = ["HermiT"]
 
+SUBPROCESS_TEXT_OPTS = {
+    "text": True,
+    "encoding": "utf-8",
+    "errors": "replace",
+}
+
 # ---------------------------------------------------------------------------
 # Vérification et configuration de Java
 # ---------------------------------------------------------------------------
@@ -56,7 +64,7 @@ def get_java_version(java_exe: str) -> Tuple[int, str]:
         proc = subprocess.run(
             [java_exe, "-version"],
             capture_output=True,
-            text=True,
+            **SUBPROCESS_TEXT_OPTS,
             timeout=10,
         )
         output = proc.stderr or proc.stdout
@@ -111,6 +119,23 @@ def setup_java() -> bool:
         print(f"[INFO] Heap Java     : -Xmx{mem_mb}M")
 
     return True
+
+
+def is_docker_available() -> bool:
+    """Retourne True si Docker CLI est disponible et fonctionnel."""
+    docker = shutil.which("docker")
+    if not docker:
+        return False
+    try:
+        proc = subprocess.run(
+            [docker, "version", "--format", "{{.Server.Version}}"],
+            capture_output=True,
+            **SUBPROCESS_TEXT_OPTS,
+            timeout=15,
+        )
+        return proc.returncode == 0
+    except Exception:
+        return False
 
 
 # ---------------------------------------------------------------------------
@@ -237,8 +262,9 @@ def analyse_version(label: str, owl_path: Path) -> Dict[str, Any]:
 
         print(f"    Temps              : {r['elapsed_seconds']} s")
         print(f"    Ontologie coherente: {r['ontology_consistent']}")
-        if r["error"]:
-            print(f"    Erreur             : {r['error'][:200]}")
+        err = r.get("error")
+        if isinstance(err, str) and err:
+            print(f"    Erreur             : {err[:200]}")
         print(f"    Inc. totales       : {len(r['inconsistent_classes_total'])}")
         print(f"    Inc. DNA repair    : {len(r['inconsistent_classes_dna_repair'])}")
 
@@ -252,25 +278,20 @@ def analyse_version(label: str, owl_path: Path) -> Dict[str, Any]:
         "reasoners": reasoner_results,
     }
 
-# ---------------------------------------------------------------------------
-# Point d'entrée
-# ---------------------------------------------------------------------------
 
-
-def main() -> None:
-    print("=" * 64)
-    print("  Analyse des raisonneurs OWL - Gene Ontology")
-    print(f"  Domaine : {DOMAIN_LABEL} ({DOMAIN_ROOT_ID})")
-    print("=" * 64)
-
-    if not setup_java():
-        sys.exit(1)
-
-    versions = [
+def _default_versions() -> List[Tuple[str, Path]]:
+    return [
         ("GO_10-25 (octobre 2025)", PATH_GO_OLD),
         ("GO_01-26 (janvier 2026)", PATH_GO_NEW),
     ]
 
+
+def collect_reasoner_results_local() -> Dict[str, Any]:
+    """Exécute l'analyse des raisonneurs en local (Java requis)."""
+    if not setup_java():
+        raise RuntimeError("Java introuvable sur la machine locale.")
+
+    versions = _default_versions()
     all_results: Dict[str, Any] = {"versions": []}
 
     for label, owl_path in versions:
@@ -281,9 +302,85 @@ def main() -> None:
         all_results["versions"].append(version_result)
 
     if not all_results["versions"]:
-        print("\n[ERREUR] Aucune ontologie chargee. Verifiez le dossier data/.")
-        sys.exit(1)
+        raise RuntimeError("Aucune ontologie chargee. Verifiez le dossier data/.")
 
+    return all_results
+
+
+def run_reasoner_in_docker(output_json_path: Optional[Path] = None) -> Dict[str, Any]:
+    """Construit puis exécute le raisonneur via Docker Compose."""
+    if not is_docker_available():
+        raise RuntimeError("Docker indisponible sur cette machine.")
+
+    host_output_path = output_json_path or (SCRIPT_DIR / "results" / "reasoner_results.json")
+    host_output_path.parent.mkdir(parents=True, exist_ok=True)
+
+    rel_output_to_analyse = host_output_path.relative_to(SCRIPT_DIR)
+    container_output_path = Path("/app/analyse") / rel_output_to_analyse
+
+    print("[INFO] Docker detecte : build de l'image reasoner...")
+    build = subprocess.run(
+        ["docker", "compose", "build", "reasoner"],
+        cwd=SCRIPT_DIR,
+        capture_output=True,
+        **SUBPROCESS_TEXT_OPTS,
+    )
+    if build.returncode != 0:
+        raise RuntimeError(
+            "Echec du build Docker.\n"
+            f"STDOUT:\n{build.stdout[-2000:]}\nSTDERR:\n{build.stderr[-2000:]}"
+        )
+
+    print("[INFO] Execution du raisonneur dans le conteneur Docker...")
+    run_cmd = [
+        "docker",
+        "compose",
+        "run",
+        "--rm",
+        "reasoner",
+        "python",
+        "analyse/reasoner_analysis.py",
+        "--json-out",
+        str(container_output_path).replace("\\", "/"),
+    ]
+    run = subprocess.run(
+        run_cmd,
+        cwd=SCRIPT_DIR,
+        capture_output=True,
+        **SUBPROCESS_TEXT_OPTS,
+    )
+    if run.stdout.strip():
+        print(run.stdout)
+    if run.returncode != 0:
+        raise RuntimeError(
+            "Echec de l'execution Docker du raisonneur.\n"
+            f"STDOUT:\n{run.stdout[-2000:]}\nSTDERR:\n{run.stderr[-2000:]}"
+        )
+
+    if not host_output_path.exists():
+        raise RuntimeError(f"Resultat JSON Docker introuvable: {host_output_path}")
+
+    with host_output_path.open("r", encoding="utf-8") as f:
+        return json.load(f)
+
+
+def run_reasoner_for_notebook(prefer_docker: bool = True) -> Dict[str, Any]:
+    """Notebook-friendly: Docker en priorité, sinon fallback local Java."""
+    if prefer_docker and is_docker_available():
+        return run_reasoner_in_docker()
+
+    if prefer_docker:
+        print("[WARN] Docker indisponible. Tentative d'execution locale (Java).")
+
+    java_ok = shutil.which("java") is not None
+    if not java_ok:
+        raise RuntimeError(
+            "Impossible d'executer le raisonneur: Docker indisponible et Java introuvable."
+        )
+    return collect_reasoner_results_local()
+
+
+def print_results_summary(all_results: Dict[str, Any]) -> None:
     print("\n" + "=" * 64)
     print("  Resume comparatif")
     print("=" * 64)
@@ -298,6 +395,41 @@ def main() -> None:
                 f"{r['elapsed_seconds']:>9.2f}  {consistent_str:<12} "
                 f"{len(r['inconsistent_classes_total']):<6}"
             )
+
+# ---------------------------------------------------------------------------
+# Point d'entrée
+# ---------------------------------------------------------------------------
+
+
+def main() -> None:
+    parser = argparse.ArgumentParser(description="Analyse des raisonneurs OWL sur GO.")
+    parser.add_argument(
+        "--json-out",
+        type=str,
+        default=None,
+        help="Chemin de sortie JSON des resultats.",
+    )
+    args = parser.parse_args()
+
+    print("=" * 64)
+    print("  Analyse des raisonneurs OWL - Gene Ontology")
+    print(f"  Domaine : {DOMAIN_LABEL} ({DOMAIN_ROOT_ID})")
+    print("=" * 64)
+
+    try:
+        all_results = collect_reasoner_results_local()
+    except RuntimeError as exc:
+        print(f"\n[ERREUR] {exc}")
+        sys.exit(1)
+
+    print_results_summary(all_results)
+
+    if args.json_out:
+        out_path = Path(args.json_out)
+        out_path.parent.mkdir(parents=True, exist_ok=True)
+        with out_path.open("w", encoding="utf-8") as f:
+            json.dump(all_results, f, ensure_ascii=False, indent=2)
+        print(f"\n[INFO] Resultats JSON ecrits dans: {out_path}")
 
 
 if __name__ == "__main__":
