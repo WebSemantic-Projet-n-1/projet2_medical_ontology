@@ -56,15 +56,30 @@ app.include_router(search.router, prefix="/api")
 # Test
 # ───
 
-@app.get("/", tags=["health"])
+@app.get("/", response_class=HTMLResponse, tags=["health"])
 def root():
-    """ Vérifie que l'API est fonctionnelle."""
-    return {
-        "status": "ok",
-        "service": "GO Evolution API",
-        "version": "1.0.0",
-        "docs": "/docs",
-    }
+    # """ Vérifie que l'API est fonctionnelle."""
+    # return {
+    #     "status": "ok",
+    #     "service": "GO Evolution API",
+    #     "version": "1.0.0",
+    #     "docs": "/docs",
+    # }
+    return HTMLResponse(content="""<!DOCTYPE html>
+<html><head><meta charset="utf-8"><title>GO Evolution API</title></head>
+<body>
+  <h1>Liens</h1>
+  <ul>
+    <li><a href="/docs">Swagger UI (/docs)</a></li>
+    <li><a href="/redoc">ReDoc (/redoc)</a></li>
+    <li><a href="/openapi.json">OpenAPI JSON</a></li>
+    <li><a href="/swagger">openapi.yaml (texte)</a></li>
+    <li><a href="/api/term/GO:0006281">Exemple terme</a></li>
+    <li><a href="/api/search?q=repair">Exemple recherche</a></li>
+    <li><a href="/api/domain/GO:0006281/stats">Exemple domaine</a></li>
+  </ul>
+</body></html>""")
+
 
 # def swagger_ui_html():
 
