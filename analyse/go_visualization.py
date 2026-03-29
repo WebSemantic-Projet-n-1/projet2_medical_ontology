@@ -486,6 +486,129 @@ def _legend_html() -> str:
 """
 
 
+def _search_bar_html() -> str:
+    return f"""
+<style>
+#go-search {{
+  position: fixed;
+  top: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: {COLOR_LEGEND_BG};
+  border: 1px solid {COLOR_LEGEND_BORDER};
+  border-radius: 24px;
+  padding: 7px 14px;
+  box-shadow: 0 4px 16px {COLOR_LEGEND_SHADOW};
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size: 13px;
+}}
+#go-search input {{
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 13px;
+  width: 220px;
+  color: {COLOR_LEGEND_TEXT};
+}}
+#go-search input::placeholder {{
+  color: #aaa;
+}}
+#go-search-count {{
+  font-size: 12px;
+  color: {COLOR_LEGEND_MUTED};
+  white-space: nowrap;
+  min-width: 60px;
+}}
+#go-search-clear {{
+  cursor: pointer;
+  color: {COLOR_LEGEND_MUTED};
+  font-size: 16px;
+  line-height: 1;
+  user-select: none;
+  display: none;
+}}
+</style>
+<div id="go-search">
+  <span style="color:#aaa;font-size:15px;">&#128269;</span>
+  <input id="go-search-input" type="text" placeholder="Rechercher un terme (GO ID ou label)…" />
+  <span id="go-search-count"></span>
+  <span id="go-search-clear" title="Effacer">&#10005;</span>
+</div>
+<script>
+(function() {{
+  function waitForNetwork(cb) {{
+    if (typeof network !== 'undefined' && network) {{ cb(); }}
+    else {{ setTimeout(function() {{ waitForNetwork(cb); }}, 100); }}
+  }}
+
+  waitForNetwork(function() {{
+    var input   = document.getElementById('go-search-input');
+    var counter = document.getElementById('go-search-count');
+    var clear   = document.getElementById('go-search-clear');
+
+    var allNodes = network.body.data.nodes.get();
+    var originalColors = {{}};
+    allNodes.forEach(function(n) {{
+      originalColors[n.id] = {{
+        color: n.color,
+        borderWidth: n.borderWidth,
+        opacity: n.opacity !== undefined ? n.opacity : 1
+      }};
+    }});
+
+    var DIM_COLOR = {{ background:'#e8e8e8', border:'#cccccc',
+                       highlight: {{ background:'#e8e8e8', border:'#cccccc' }} }};
+
+    function doSearch(query) {{
+      var q = query.trim().toLowerCase();
+      clear.style.display = q ? 'inline' : 'none';
+
+      if (!q) {{
+        counter.textContent = '';
+        var restore = allNodes.map(function(n) {{
+          return {{ id: n.id, color: originalColors[n.id].color,
+                   borderWidth: originalColors[n.id].borderWidth, opacity: 1 }};
+        }});
+        network.body.data.nodes.update(restore);
+        return;
+      }}
+
+      var matchIds = [];
+      var updates  = allNodes.map(function(n) {{
+        var label = (n.label || '').toLowerCase();
+        var title = (typeof n.title === 'string' ? n.title : '').toLowerCase();
+        var hit   = label.indexOf(q) !== -1 || title.indexOf(q) !== -1;
+        if (hit) matchIds.push(n.id);
+        return {{ id: n.id,
+                  color: hit ? originalColors[n.id].color : DIM_COLOR,
+                  borderWidth: hit ? originalColors[n.id].borderWidth : 0,
+                  opacity: hit ? 1 : 0.18 }};
+      }});
+
+      network.body.data.nodes.update(updates);
+      counter.textContent = matchIds.length + ' résultat' + (matchIds.length !== 1 ? 's' : '');
+
+      if (matchIds.length > 0) {{
+        network.fit({{ nodes: matchIds, animation: {{ duration: 500, easingFunction: 'easeInOutQuad' }} }});
+      }}
+    }}
+
+    input.addEventListener('input', function() {{ doSearch(input.value); }});
+    clear.addEventListener('click', function() {{
+      input.value = '';
+      doSearch('');
+      input.focus();
+    }});
+  }});
+}})();
+</script>
+"""
+
+
 def _inject_legend(output_path: Path) -> None:
     html = output_path.read_text(encoding="utf-8")
     if ".vis-tooltip { white-space: pre-line;" not in html and "</style>" in html:
@@ -502,6 +625,18 @@ def _inject_legend(output_path: Path) -> None:
         html = html.replace("</body>", f"{legend}\n</body>")
     else:
         html += legend
+    output_path.write_text(html, encoding="utf-8")
+
+
+def _inject_search_bar(output_path: Path) -> None:
+    html = output_path.read_text(encoding="utf-8")
+    if "id=\"go-search\"" in html:
+        return
+    search = _search_bar_html()
+    if "</body>" in html:
+        html = html.replace("</body>", f"{search}\n</body>")
+    else:
+        html += search
     output_path.write_text(html, encoding="utf-8")
 
 
@@ -557,4 +692,5 @@ def build_interactive_network(
     )
     net.write_html(str(output_path), notebook=False)
     _inject_legend(output_path)
+    _inject_search_bar(output_path)
     return output_path
