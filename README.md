@@ -23,26 +23,12 @@ projet2_medical_ontology/
 ├── README.md              # Ce fichier
 ├── README.txt             # Copie pour soumission (instructions courtes)
 ├── requirements.txt       # Dépendances Python de base (sans PyTorch)
-├── requirements-cuda.txt  # PyTorch avec CUDA (à installer en priorité si GPU dispo)
-├── requirements-cpu.txt   # PyTorch CPU uniquement (repli si pas de CUDA)
 ├── data/                  # Fichiers OWL GO (à télécharger, voir data/README.md)
 ├── analyse/               # Partie 1 : scripts d'analyse comparative GO
-│   ├── README.md
-│   ├── Dockerfile         # Image Java 25 + Python pour le raisonneur
-│   ├── docker-compose.yml # Lancement du raisonneur (4 Go de heap)
-│   ├── requirements.txt   # Dépendances Python du raisonneur (copiées en requirements-reasoner.txt dans l'image Docker)
-│   ├── load_ontologies.py
-│   ├── quantitative_analysis.py
-│   ├── qualitative_analysis.py
-│   └── reasoner_analysis.py
-├── service-web/          # Partie 2 : API d'analyse
-│   ├── README.md
-│   ├── requirements.txt
-│   ├── openapi.yaml
-│   └── app/
-├── extension-chrome/      # Partie 3 : extension Chrome (Manifest V3)
-├── extension-firefox/     # Partie 3 : extension Firefox (optionnel)
-└── triplestore/           # Config et données pour Jena Fuseki / GraphDB
+│   └── analyse.ipynb      # Notebook d'analyse (Python, rdflib, owlready2, SPARQL)
+├── service-web/           # Partie 2 : API d'analyse
+├── extensions             # Partie 3 : extensions Chrome & Firefox
+└── api/                   # Code de l'API REST (Flask/FastAPI) pour analyses sur GO
 ```
 
 ---
@@ -53,8 +39,7 @@ projet2_medical_ontology/
 
 - **Python** : 3.10+ (recommandé 3.11 ou 3.12).
 - **OS** : Linux ou Windows.
-- **CUDA** (prioritaire) : pilote NVIDIA + toolkit CUDA 11.8 ou 12.x pour utiliser le GPU. Sinon, le projet utilise le CPU automatiquement.
-- **Docker** : recommandé pour exécuter le raisonneur OWL (HermiT/Pellet) via l'image fournie ; sinon, installer Java 25 localement.
+- **Docker** : recommandé pour exécuter le raisonneur OWL (HermiT/Pellet) via l'image fournie ;
 - **Optionnel** : Docker pour triplestore (Jena Fuseki ou GraphDB).
 
 ### 3.2 Environnement virtuel (venv)
@@ -70,13 +55,8 @@ pip install --upgrade pip
 # 1) Dépendances de base (rdflib, owlready2, SPARQL, etc.)
 pip install -r requirements.txt
 
-# 2) PyTorch : CUDA en priorité (Linux avec NVIDIA)
-pip install -r requirements-cuda.txt
-# Si erreur (pas de CUDA, driver manquant, etc.) → repli CPU :
-# pip install -r requirements-cpu.txt
-
 # 3) Service web
-pip install -r service-web/requirements.txt
+pip install -r api/requirements.txt
 ```
 
 **Windows (PowerShell ou CMD) :**
@@ -88,14 +68,14 @@ python -m venv .venv
 pip install --upgrade pip
 
 pip install -r requirements.txt
-pip install -r requirements-cuda.txt
-REM Si échec (pas de GPU / CUDA non installé) :
-REM pip install -r requirements-cpu.txt
 
-pip install -r service-web\requirements.txt
+
+pip install -r api\requirements.txt
 ```
 
 **Windows (Git Bash) :** `source .venv/Scripts/activate` puis les mêmes commandes `pip`.
+
+
 
 ## 4. Données et domaines
 
