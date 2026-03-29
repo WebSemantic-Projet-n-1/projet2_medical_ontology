@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Partie 1 - Script 3 : Analyse qualitative sur 5 termes du domaine (DNA repair).
+Partie 1 - Script 3 : Analyse qualitative sur 5 termes du domaine (Lipid metabolism).
 
 STRUCTURE DU SCRIPT
 -------------------
@@ -18,14 +18,14 @@ from load_ontologies import GO_NS, PATH_GO_NEW, PATH_GO_OLD, load_ontology
 from owlready2 import Restriction
 
 # ---------------------------------------------------------------------------
-# 5 termes du domaine DNA repair (GO:0006281) et ses sous-processus majeurs
+# 5 termes hardcodes du domaine Lipid metabolism (GO:0006629)
 # ---------------------------------------------------------------------------
 TERM_IDS: List[str] = [
-    "GO:0006281",  # DNA repair (racine du domaine)
-    "GO:0006284",  # base-excision repair
-    "GO:0006289",  # nucleotide-excision repair
-    "GO:0006298",  # mismatch repair
-    "GO:0006302",  # double-strand break repair
+    "GO:0140377",  # sophorolipid biosynthetic process
+    "GO:0030149",  # sphingolipid catabolic process
+    "GO:1901928",  # cadinene biosynthetic process
+    "GO:0062112",  # fatty acid primary amide biosynthetic process
+    "GO:0006721",  # terpenoid metabolic process
 ]
 
 # Noms lisibles des relations OBO les plus courantes dans GO
@@ -253,7 +253,7 @@ def _section_relations(c: Dict[str, Any]) -> List[str]:
 def format_report(comparisons: List[Dict[str, Any]]) -> str:
     term_list = ", ".join(c["go_id"] for c in comparisons)
     lines: List[str] = [
-        "# Analyse qualitative - DNA repair (GO:0006281)",
+        "# Analyse qualitative - Lipid metabolism (GO:0006629)",
         "",
         "Versions comparees : GO oct. 2025 -> GO jan. 2026",
         f"Termes analyses : {term_list}",
@@ -278,7 +278,7 @@ def format_report(comparisons: List[Dict[str, Any]]) -> str:
 # ---------------------------------------------------------------------------
 
 def main() -> None:
-    """Analyse qualitative des 5 termes DNA repair entre les deux versions GO."""
+    """Analyse qualitative des 5 termes Lipid metabolism entre les deux versions GO."""
     print("Chargement de l'ontologie GO oct. 2025 …")
     onto_old = load_ontology(PATH_GO_OLD)
 
