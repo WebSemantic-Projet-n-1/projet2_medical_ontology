@@ -1,6 +1,6 @@
 services:
 
-  # ── Serveur Apache Jena Fuseki ───────────────────────────────────────────────
+  # -- Serveur Apache Jena Fuseki -----------------------------------------------
   fuseki:
     image: stain/jena-fuseki:latest
     container_name: fuseki
@@ -24,7 +24,8 @@ services:
       start_period: 30s
     restart: "no"
 
-  # ── Chargement initial des fichiers OWL (one-shot, idempotent) ───────────────
+
+  # -- Chargement initial des fichiers OWL (one-shot, idempotent) ---------------
   #
   # Ce service démarre une seule fois après que Fuseki est prêt (health check),
   # charge go_2025-10.owl et go_2026-01.owl dans deux graphes nommés via le
@@ -58,7 +59,9 @@ services:
       # Volume dédié au marqueur d'idempotence du loader
       - loader-marker:/marker
     restart: "no"
-  # ── Génération et chargement des graphes evo: (one-shot, idempotent) ─────────
+
+
+  # -- Génération et chargement des graphes evo: (one-shot, idempotent) ---------
   #
   # Parse les deux fichiers OWL avec rdflib, génère les triplets evo:,
   # puis les envoie dans Fuseki via HTTP PUT.
@@ -149,11 +152,14 @@ services:
         condition: service_healthy
       sparql-inference:
         condition: service_completed_successfully
+    # volumes:
+    #   - ./app:/app/app:ro
     restart: "no"
 
 volumes:
   fuseki-data:
     name: go-fuseki-data
+    
   rdf-marker:
     name: go-rdf-marker
   loader-marker:
