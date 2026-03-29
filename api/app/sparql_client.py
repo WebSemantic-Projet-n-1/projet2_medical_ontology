@@ -41,8 +41,9 @@ load_dotenv()
 ENDPOINT = os.getenv("SPARQL_ENDPOINT", "http://localhost:3030/ds/sparql")
 
 # Lien important pour différencier sans besoin d'exister réellement
-GRAPH_OLD = "http://example.org/go/version/2025-10"
-GRAPH_NEW = "http://example.org/go/version/2026-01"
+GRAPH_OLD      = "http://example.org/go/version/2025-10"
+GRAPH_NEW      = "http://example.org/go/version/2026-01"
+GRAPH_INFERRED = "http://example.org/go/inferred"
 
 # Préfixes SPARQL
 PREFIXES = """
@@ -159,7 +160,32 @@ class SparqlClient:
             elif "2026-01" in version:
                 result["new"] = entry
 
+        # Enrichit la réponse avec le lien evo:previousVersion inféré par le triplestore
+        if result["new"]:
+            prev_uri = self._get_inferred_previous_version(result["new"]["termURI"])
+            result["new"]["previousVersion"] = prev_uri
+
         return result
+
+    def _get_inferred_previous_version(self, term_uri: str) -> str | None:
+        """
+        Consulte le graphe d'inférence <http://example.org/go/inferred> pour
+        récupérer l'URI de la version précédente d'un terme, telle qu'inférée
+        automatiquement par le triplestore via SPARQL UPDATE.
+
+        Retourne l'URI de la version précédente, ou None si absente.
+        """
+        sparql = PREFIXES + f"""
+        SELECT ?prevURI
+        WHERE {{
+            GRAPH <{GRAPH_INFERRED}> {{
+                <{term_uri}> evo:previousVersion ?prevURI .
+            }}
+        }}
+        LIMIT 1
+        """
+        rows = self.query(sparql)
+        return rows[0]["prevURI"] if rows else None
 
     # ── GET /api/term/{go_id}/diff ────────────────────────────
 
@@ -385,6 +411,36 @@ class SparqlClient:
                 seen[tid] = row
 
         return list(seen.values())
+
+    # ── GET /api/inferred ────────────────────────────────────
+    #  (méthode utilitaire — expose le graphe d'inférence)
+
+    def get_inferred_links(self) -> list[dict]:
+        """
+        Retourne tous les triplets evo:previousVersion inférés automatiquement
+        par le triplestore (stockés dans <http://example.org/go/inferred>).
+
+        Cette méthode illustre l'utilisation des capacités d'inférence :
+        les triplets n'ont pas été créés par Python — ils ont été générés
+        par la règle SPARQL UPDATE du service sparql-inference.
+
+        Retourne
+        --------
+        Liste de dicts {termID, termNouveau, termAncien} par lien inféré.
+        """
+        sparql = PREFIXES + f"""
+        SELECT ?termID ?termNouveau ?termAncien
+        WHERE {{
+            GRAPH <{GRAPH_INFERRED}> {{
+                ?termNouveau evo:previousVersion ?termAncien .
+            }}
+            GRAPH ?g {{
+                ?termNouveau evo:termID ?termID .
+            }}
+        }}
+        ORDER BY ?termID
+        """
+        return self.query(sparql)
 
 
 # ───

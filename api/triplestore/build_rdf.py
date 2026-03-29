@@ -32,8 +32,8 @@ UTILISATION
 """
 import os
 import argparse
-import logging
 import requests
+import logging
 from pathlib import Path
 from collections import deque
 from rdflib import RDF, OWL, Graph, Literal, Namespace, URIRef
@@ -298,8 +298,17 @@ def to_evo_rdf(terms: list[dict], version_uri: URIRef, version_date: str) -> Gra
 
 def add_previous_version_links(g_old: Graph, g_new: Graph) -> Graph:
     """
-    Compare les deux graphes et ajoute les triplets evo:previousVersion
-    pour chaque terme présent dans les deux versions.
+    [REMPLACÉ PAR L'INFÉRENCE TRIPLESTORE]
+
+    Cette fonction n'est plus appelée dans le pipeline principal.
+    Les triplets evo:previousVersion sont maintenant générés automatiquement
+    par le triplestore Apache Jena Fuseki via un SPARQL UPDATE :
+        triplestore/sparql/materialize_previous_version.ru
+
+    La règle d'inférence formelle est documentée dans :
+        triplestore/config/inference.rules  (syntaxe Jena GenericRuleReasoner)
+
+    Conservée ici à titre de référence et pour les tests unitaires hors Fuseki.
 
     Paramètres
     ----------
@@ -409,8 +418,12 @@ def main() -> None:
     g_new = to_evo_rdf(terms_new, GRAPH_NEW, VERSION_DATE_NEW)
 
     # ── 3. Enrichissement previousVersion ─────────────────────
-    log.info("=== Ajout des liens previousVersion ===")
-    g_new = add_previous_version_links(g_old, g_new)
+    # Les liens evo:previousVersion sont désormais inférés directement
+    # par le triplestore via SPARQL UPDATE (triplestore/sparql/materialize_previous_version.ru).
+    # Le service sparql-inference (docker-compose.yml) exécute cette inférence
+    # après le chargement des données, conformément au principe d'enrichissement
+    # par inférence décrit dans triplestore/config/inference.rules.
+    log.info("=== Liens previousVersion : délégués au triplestore (SPARQL inference) ===")
 
     # ── 4. Sauvegarde locale en .ttl ──────────────────────────
     path_old = args.output_dir / "go_dna_repair_2025-10.ttl"

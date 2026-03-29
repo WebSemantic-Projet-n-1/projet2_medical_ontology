@@ -50,14 +50,14 @@ services:
       FUSEKI_URL: ${FUSEKI_URL}
       FUSEKI_DATASET: ${FUSEKI_DATASET}
       ADMIN_PASSWORD: ${ADMIN_PASSWORD}
+      MARKER_DIR: /marker
     volumes:
       # Fichiers OWL sources (lecture seule) — dossier data/ à la racine du projet
       - ../data:/data:ro
       # Script de chargement
       - ./triplestore/config/load-data.sh:/scripts/load-data.sh:ro
-      # Volume partagé avec Fuseki — même point de montage pour que le marqueur
-      # .data-loaded soit visible des deux conteneurs.
-      - fuseki-data:/fuseki
+      # Volume dédié au marqueur d'idempotence du loader
+      - loader-marker:/marker
     restart: "no"
 
 
@@ -103,8 +103,40 @@ services:
         echo "[rdf-builder] Terminé."
     restart: "no"
 
+  # ── Inférence SPARQL : génération automatique des evo:previousVersion ────────
+  #
+  # Ce service utilise les capacités d'inférence du triplestore :
+  #   — exécute triplestore/sparql/materialize_previous_version.ru via HTTP POST
+  #   — Fuseki compare les evo:termID entre graphes nommés et insère les triplets
+  #     evo:previousVersion inférés dans <http://example.org/go/inferred>
+  #   — valide l'intégrité des liens inférés et sauvegarde les métriques JSON
+  #   — s'exécute une seule fois après rdf-builder (marqueur .inference-done)
+  #
+  # La règle formelle est définie dans triplestore/config/inference.rules
+  sparql-inference:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: sparql-inference
+    depends_on:
+      rdf-builder:
+        condition: service_completed_successfully
+    command: ["python", "triplestore/run_inference_validation.py"]
+    env_file: .env
+    environment:
+      FUSEKI_URL: http://fuseki:3030
+      FUSEKI_DATASET: ${FUSEKI_DATASET}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD}
+      MARKER_DIR: /marker
+      METRICS_OUTPUT_DIR: /output
+    volumes:
+      # Sauvegarde persistante des métriques et validations d'inférence
+      - ./triplestore/results:/output
+      # Volume dédié au marqueur d'idempotence
+      - inference-marker:/marker
+    restart: "no"
 
-  # -- API FastAPI ---------------------------------------------------------------
+  # ── API FastAPI ───────────────────────────────────────────────────────────────
   fastapi:
     build:
       context: .
@@ -118,7 +150,7 @@ services:
     depends_on:
       fuseki:
         condition: service_healthy
-      rdf-builder:
+      sparql-inference:
         condition: service_completed_successfully
     # volumes:
     #   - ./app:/app/app:ro
@@ -130,3 +162,7 @@ volumes:
     
   rdf-marker:
     name: go-rdf-marker
+  loader-marker:
+    name: go-loader-marker
+  inference-marker:
+    name: go-inference-marker

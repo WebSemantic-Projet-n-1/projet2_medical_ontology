@@ -1,0 +1,65 @@
+# Règles d'inférence Apache Jena — vocabulaire evo:
+#
+# Ce fichier définit les règles de raisonnement personnalisées pour le
+# triplestore Jena/Fuseki. Elles utilisent la syntaxe du GenericRuleReasoner
+# de Jena (forward + backward chaining).
+#
+# Référence : https://jena.apache.org/documentation/inference/#rules
+#
+# Usage avec rdflib/Jena :
+#   reasoner = GenericRuleReasoner(Rule.parseRules(open("inference.rules").read()))
+#   infModel  = InfModel(reasoner, baseModel)
+#
+# Note : Pour les datasets multi-graphes (TDB2 avec graphes nommés), la
+# matérialisation via SPARQL UPDATE (materialize_previous_version.ru) est
+# privilégiée car elle opère nativement sur les graphes nommés de Fuseki.
+# Ce fichier sert de spécification formelle des règles et peut être utilisé
+# avec un InfModel Jena en mémoire.
+
+@prefix evo:  <http://example.org/evolution/> .
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+
+# ─────────────────────────────────────────────────────────────────────────────
+# RÈGLE 1 : evo:previousVersion
+# Si deux TermVersion partagent le même evo:termID,
+# appartiennent à des versions différentes,
+# et que la version du premier est postérieure à celle du second,
+# alors le premier a pour evo:previousVersion le second.
+# ─────────────────────────────────────────────────────────────────────────────
+[previousVersion_rule:
+    (?termNouveau rdf:type evo:TermVersion)
+    (?termAncien  rdf:type evo:TermVersion)
+    (?termNouveau evo:termID ?id)
+    (?termAncien  evo:termID ?id)
+    (?termNouveau evo:belongsToVersion ?vNouveau)
+    (?termAncien  evo:belongsToVersion ?vAncien)
+    (?vNouveau    evo:versionDate ?dateNouveau)
+    (?vAncien     evo:versionDate ?dateAncien)
+    notEqual(?vNouveau, ?vAncien)
+    greaterThan(?dateNouveau, ?dateAncien)
+    ->
+    (?termNouveau evo:previousVersion ?termAncien)
+]
+
+# ─────────────────────────────────────────────────────────────────────────────
+# RÈGLE 2 : evo:hasSuccessorVersion (inverse symétrique)
+# Si termNouveau evo:previousVersion termAncien,
+# alors termAncien evo:hasSuccessorVersion termNouveau.
+# ─────────────────────────────────────────────────────────────────────────────
+[hasSuccessorVersion_rule:
+    (?termNouveau evo:previousVersion ?termAncien)
+    ->
+    (?termAncien evo:hasSuccessorVersion ?termNouveau)
+]
+
+# ─────────────────────────────────────────────────────────────────────────────
+# RÈGLE 3 : Terme stable (présent dans les deux versions, non déprécié)
+# Un terme est evo:stable s'il a un evo:previousVersion et n'est pas déprécié.
+# ─────────────────────────────────────────────────────────────────────────────
+[stableTerm_rule:
+    (?termNouveau evo:previousVersion ?termAncien)
+    (?termNouveau evo:isDeprecated    "false"^^xsd:boolean)
+    ->
+    (?termNouveau rdf:type evo:StableTerm)
+]
